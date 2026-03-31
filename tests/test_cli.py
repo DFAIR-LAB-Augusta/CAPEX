@@ -22,28 +22,26 @@ def test_build_parser_returns_expected_defaults() -> None:
 
 def test_parser_accepts_custom_values() -> None:
     parser = build_parser()
-    args = parser.parse_args(
-        [
-            '--devices',
-            'my_devices.yaml',
-            '--attacks',
-            'my_attacks.yaml',
-            '--duration-seconds',
-            '120',
-            '--safe-period-seconds',
-            '15',
-            '--output-dir',
-            'out/raw',
-            '--log-dir',
-            'out/logs',
-            '--device',
-            'nestCam',
-            '--device',
-            'phillipsHub',
-            '--dry-run',
-            '--verbose',
-        ]
-    )
+    args = parser.parse_args([
+        '--devices',
+        'my_devices.yaml',
+        '--attacks',
+        'my_attacks.yaml',
+        '--duration-seconds',
+        '120',
+        '--safe-period-seconds',
+        '15',
+        '--output-dir',
+        'out/raw',
+        '--log-dir',
+        'out/logs',
+        '--device',
+        'nestCam',
+        '--device',
+        'phillipsHub',
+        '--dry-run',
+        '--verbose',
+    ])
 
     assert args.devices == Path('my_devices.yaml')
     assert args.attacks == Path('my_attacks.yaml')
