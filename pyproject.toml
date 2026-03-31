@@ -1,12 +1,15 @@
 [project]
-name = "dataset_creation"
+name = "capex"
 version = "0.1.0"
-description = "Im abt to bussss"
-authors = [
-    { name = "Uh", email = "bruh@yandex.ru" }
-]
-requires-python = ">=3.8"
-
+description = "CAPEX, network attack capture for network security analysis"
+readme = "README.md"
+requires-python = ">=3.14"
 dependencies = [
-    "pandas>=2.0"
+    "pandas>=3.0.2",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.0.2",
+    "ruff>=0.15.8",
 ]

