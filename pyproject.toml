@@ -1,15 +1,54 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
 [project]
 name = "capex"
-version = "0.1.0"
-description = "CAPEX, network attack capture for network security analysis"
+version = "1.0.0"
+description = "Config-driven network attack capture orchestration for security research"
 readme = "README.md"
 requires-python = ">=3.14"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Seth Barrett" }
+]
 dependencies = [
-    "pandas>=3.0.2",
+  "PyYAML>=6.0.2",
+  "pydantic>=2.11.0",
+  "rich>=14.0.0",
 ]
 
+[project.scripts]
+capex = "capex.cli:main"
+
 [dependency-groups]
-dev = [
-    "pytest>=9.0.2",
-    "ruff>=0.15.8",
+lint = [
+  "ruff>=0.15.8",
 ]
+test = [
+  "pytest>=9.0.2",
+  "pytest-cov>=6.0.0",
+]
+dev = [
+  { include-group = "lint" },
+  { include-group = "test" },
+]
+scripting = [
+    "pandas==3.0.2"
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/capex"]
+
+[tool.pytest.ini_options]
+minversion = "9.0"
+testpaths = ["tests"]
+addopts = [
+  "-q",
+  "--strict-markers",
+  "--strict-config",
+]
+pythonpath = ["src"]
+
+[tool.uv]
+package = true

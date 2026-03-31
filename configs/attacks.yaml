@@ -1,0 +1,72 @@
+attacks:
+  - name: xmas_flood
+    label: XMAS_Flood
+    enabled: true
+    repeats: 3
+    command:
+      - nmap
+      - -sX
+      - -p
+      - 1-100
+      - "{target_ip}"
+
+  - name: tcp_syn_flood
+    label: TCP_SYN_Flood
+    enabled: true
+    repeats: 3
+    command:
+      - hping3
+      - -S
+      - -c
+      - "100"
+      - -p
+      - "443"
+      - "{target_ip}"
+
+  - name: udp_flood
+    label: UDP_Flood
+    enabled: true
+    repeats: 3
+    command:
+      - hping3
+      - --udp
+      - -c
+      - "100"
+      - -p
+      - "53"
+      - "{target_ip}"
+
+  - name: http_flood
+    label: HTTP_Flood
+    enabled: true
+    repeats: 3
+    command:
+      - hping3
+      - -S
+      - -c
+      - "100"
+      - -p
+      - "80"
+      - "{target_ip}"
+
+  # Original FIRCE Concept drift
+  - name: hulk_http_flood
+    label: HULK_HTTP_Flood
+    enabled: true
+    repeats: 3
+    command:
+      - uv
+      - run
+      - python3
+      - "./src/capex/attacks/hulk.py"
+      - "60"
+      - "http://{target_ip}"
+
+  # - name: http_request
+  #   label: HTTP_Request
+  #   enabled: false
+  #   repeats: 3
+  #   command:
+  #     - python3
+  #     - HTTPRequest.py
+  #     - "{target_ip}"

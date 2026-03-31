@@ -1,0 +1,45 @@
+devices:
+  - name: phillipsHub
+    ip: 192.168.1.172
+    enabled: true
+
+  - name: nestCam
+    ip: 192.168.1.196
+    enabled: true
+
+  - name: googleNestMini
+    ip: 192.168.1.112
+    enabled: true
+
+  - name: amazonAlexa
+    ip: 192.168.1.103
+    enabled: true
+
+  - name: longPlus-Cam
+    ip: 192.168.1.175
+    enabled: true
+
+  - name: kasaSmartPlug
+    ip: 192.168.1.104
+    enabled: true
+
+  - name: roborockVacc
+    ip: 192.168.1.170
+    enabled: true
+
+  - name: okpVacc
+    ip: 192.168.1.200
+    enabled: true
+
+  - name: GosungLight2
+    ip: 192.168.1.215
+    enabled: true
+
+  - name: RingDoorbell
+    ip: 192.168.1.221
+    enabled: true
+
+  # Do not run
+  # - name: HentleSmartLock
+  #   ip: 192.168.1.xxx
+  #   enabled: false
