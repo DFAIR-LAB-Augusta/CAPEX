@@ -11,7 +11,7 @@ concurrency:
 
 jobs:
   pytest:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, dfair-gha-runner]
     strategy:
       fail-fast: false
       matrix:
