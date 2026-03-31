@@ -34,8 +34,12 @@ dev = [
   { include-group = "test" },
 ]
 scripting = [
-    "pandas==3.0.2"
+    "cicflowmeter",
+    "pandas==3.0.2",
 ]
+
+[tool.uv.sources]
+cicflowmeter = { git = "https://github.com/sethbarrett50/cicflowmeter" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/capex"]

@@ -55,3 +55,6 @@ run.dry: ## Validate config and print execution plan
 		--attacks $(ATTACKS) \
 		--duration-seconds $(DURATION) \
 		--safe-period-seconds $(SAFE_PERIOD)
+
+flows: ## Convert PCAPs in data/raw to CSVs in data/flows
+	./scripts/run_flows.sh
