@@ -10,7 +10,7 @@ permissions:
 
 jobs:
   ruff-style:
-    runs-on: [self-hosted]
+    runs-on: [self-hosted, dfair-gha-runner]
 
     strategy:
       matrix:
