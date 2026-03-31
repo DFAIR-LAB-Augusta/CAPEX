@@ -1,2 +1,0 @@
-Attack: HULK_HTTP_Flood, Attempt: 1, Unix Time: 1750063809.515392, Time Since Start: 0.00010728836059570312
-Attack: HULK_HTTP_Flood, Attempt: 2, Unix Time: 1750073169.608831, Time Since Start: 9360.093546152115

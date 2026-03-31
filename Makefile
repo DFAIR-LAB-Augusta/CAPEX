@@ -5,8 +5,10 @@ UV    ?= uv
 RUFF  ?= ruff
 PY    ?= python
 
-DOCUMENT_PATH ?= ./assets/sample.tex
-MIN_LEN ?= 4
+DEVICES ?= configs/devices.yaml
+ATTACKS ?= configs/attacks.yaml
+DURATION ?= 28800
+SAFE_PERIOD ?= 900
 
 .PHONY: help sync lint format check test run sample build clean
 
@@ -38,3 +40,18 @@ clean: ## Remove build artifacts
 preflight: ## Build + run twine metadata checks
 	$(UV) build
 	uvx twine check dist/*
+
+run: ## Run CAPEX with default configs
+	$(UV) run python -m capex \
+		--devices $(DEVICES) \
+		--attacks $(ATTACKS) \
+		--duration-seconds $(DURATION) \
+		--safe-period-seconds $(SAFE_PERIOD)
+
+run.dry: ## Validate config and print execution plan
+	$(UV) run python -m capex \
+		--dry-run \
+		--devices $(DEVICES) \
+		--attacks $(ATTACKS) \
+		--duration-seconds $(DURATION) \
+		--safe-period-seconds $(SAFE_PERIOD)

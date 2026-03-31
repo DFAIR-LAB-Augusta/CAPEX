@@ -122,7 +122,7 @@ if __name__ == '__main__':
         url = 'http://' + url
 
     m = re.search(r'(https?\://)?([^/]+)', url)
-    host = m.group(2)
+    host = m.group(2)  # type: ignore
 
     print(f'[*] Starting HULK attack on {url} for {duration} seconds.')
 
