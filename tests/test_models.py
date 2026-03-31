@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ipaddress import IPv4Address
 
-from capex.models import AttackConfig, DeviceConfig
+from capex.models import CommandAttackConfig, DeviceConfig
 
 
 def test_device_config_validates() -> None:
@@ -11,7 +11,7 @@ def test_device_config_validates() -> None:
 
 
 def test_attack_config_validates() -> None:
-    attack = AttackConfig(
+    attack = CommandAttackConfig(
         name='udp_flood',
         label='UDP_Flood',
         command=['hping3', '--udp', '-c', '100', '-p', '53', '{target_ip}'],
