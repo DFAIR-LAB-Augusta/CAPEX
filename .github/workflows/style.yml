@@ -10,29 +10,29 @@ permissions:
 
 jobs:
   ruff-style:
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, dfair-gha-runner]
 
     strategy:
       matrix:
         python-version: ["3.14"]
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
-      - name: Set up Python
-        uses: actions/setup-python@v6
-        with:
-          python-version:  ${{ matrix.python-version }}
+      - name: Show bootstrap Python and uv
+        run: |
+          python3 --version
+          which python3
+          uv --version
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@v7
+      - name: Install requested Python
+        run: uv python install ${{ matrix.python-version }}
 
       - name: Sync dependencies
-        run: uv sync --frozen
+        run: uv sync --frozen --python ${{ matrix.python-version }}
 
-      - name: Ruff format (check only)
-        run: uv run ruff format --check .
+      - name: Ruff format
+        run: uv run --python ${{ matrix.python-version }} ruff format --check .
 
       - name: Ruff lint
-        run: uv run ruff check .
+        run: uv run --python ${{ matrix.python-version }} ruff check .
