@@ -1,97 +1,208 @@
 # CAPEX: Capture for Evaluation
 
-This directory contains all scripts, datasets, and supporting files for the generation and processing of network traffic datasets used in both the FIRE intrusion detection framework and in concept drift analysis for conformal evaluation.
+CAPEX is a configurable framework for orchestrating network traffic capture and controlled attack generation for intrusion detection and concept drift research.
+
+It is designed to support reproducible dataset creation for systems such as FIRE and conformal evaluation pipelines, with an emphasis on structured configuration, extensibility, and modern Python practices.
 
 ---
 
-## Directory Overview
+## Overview
 
-### `AttackCaps_OLD/`
+CAPEX provides:
 
-Contains legacy PCAP and log files used in the original **FIRE** paper experiments. Each pair of files (`.pcap`, `.txt`) corresponds to a device under attack and the metadata of the attack timing.
+* Config driven orchestration of network captures and attack execution
+* Typed models and validation for devices and attack definitions
+* Extensible attack system with registry based dispatch
+* Structured logging and reproducible experiment outputs
+* Integration with tcpdump and downstream flow generation tools
 
-### `CEFlows/`
-
-Stores new datasets generated for evaluating the **Conformal Evaluator** system. Includes:
-
-* `.pcap` files with captured network traffic.
-* `.csv` files output by CICFlowMeter.
-* `.txt` logs of attack events.
-
-### `oldCapScripts/`
-
-Archive of older capture and attack orchestration scripts, used during development of the FIRE dataset.
+The system is intended for controlled environments such as lab networks, testbeds, or isolated research deployments.
 
 ---
 
-## Key Files
+## Project Structure
 
-### `conceptDriftCap.py`
-
-Main orchestration script for concept drift experiments. Automates:
-
-* PCAP data capture
-* Launching multiple attacks (e.g., DoS, HULK)
-* Logging of timing metadata for ground truth
-
-### `hulk.py`
-
-Standalone script for executing an HTTP flood (HULK) attack against a specified IoT device or service.
-
-Usage:
-
-```bash
-python3 hulk.py <duration_seconds> <target_url>
-# e.g. python3 hulk.py 60 http://192.168.1.172
+```text
+.
+├── configs/              # YAML configuration for devices and attacks
+├── data/
+│   ├── legacy/          # Historical datasets and artifacts
+│   ├── logs/            # Attack event logs
+│   └── raw/             # Captured PCAP files
+├── scripts/             # Utility and legacy scripts
+├── src/capex/           # Main application package
+│   ├── attacks/         # Attack implementations and registry
+│   ├── services/        # Capture orchestration logic
+│   ├── cli.py           # Command line interface
+│   ├── models.py        # Typed configuration models
+│   ├── runner.py        # Command execution wrapper
+│   ├── scheduler.py     # Attack scheduling logic
+│   ├── capture.py       # Tcpdump integration
+│   ├── config.py        # YAML loading
+│   ├── validation.py    # Runtime validation
+│   ├── paths.py         # Path helpers
+│   ├── logging_utils.py # Logging configuration
+│   └── exceptions.py    # Custom exception types
+├── tests/               # Unit and integration tests
+├── pyproject.toml       # Project configuration
+└── Makefile             # Development commands
 ```
-
-### `merge_ce_flows.py`
-
-Utility to merge multiple CSV flow outputs into a single unified file ordered by timestamp.
-
-### `run_CIC_batch.sh`
-
-Batch processor to run CICFlowMeter on all PCAP files inside `CEFlows/`. It outputs `.csv` flow files suitable for ML processing.
 
 ---
 
-## Setup (Using `uv`)
+## Configuration
 
-This project uses [`uv`](https://github.com/astral-sh/uv) for dependency management and virtual environment setup.
+CAPEX is driven by YAML configuration files.
 
-### 1. Clone the repository and change directory:
+### Devices
 
-```bash
-cd ~/Desktop/NetworkDatasetCreation
+`configs/devices.yaml`
+
+```yaml
+devices:
+  - name: nestCam
+    ip: 192.168.1.196
+    enabled: true
 ```
 
-### 2. Set up the virtual environment and install dependencies:
+### Attacks
 
-```bash
-uv sync
+`configs/attacks.yaml`
+
+```yaml
+attacks:
+  - name: tcp_syn_flood
+    label: TCP_SYN_Flood
+    kind: command
+    enabled: true
+    repeats: 3
+    command:
+      - hping3
+      - -S
+      - -c
+      - "100"
+      - -p
+      - "443"
+      - "{target_ip}"
 ```
 
-This will:
+Attack types are resolved through the internal registry and can be extended without modifying orchestration logic.
 
-* Create a `.venv/` directory
-* Install all required packages from `pyproject.toml` and `uv.lock`
+---
 
-### 3. Run scripts with uv:
+## Usage
+
+### Install dependencies
 
 ```bash
-uv run conceptDriftCap.py
-uv run merge_ce_flows.py
+make sync
 ```
 
+or directly:
+
+```bash
+uv sync --dev
+```
+
+---
+
+### Validate configuration
+
+```bash
+make dry-run
+```
+
+This loads configs, validates them, and prints the execution plan without running anything.
+
+---
+
+### Run full capture
+
+```bash
+make run
+```
+
+---
+
+### Run for a single device
+
+```bash
+make run-device DEVICE=nestCam
+```
+
+---
+
+### Run tests
+
+```bash
+make test
+```
+
+---
+
+## Output
+
+* PCAP files are written to `data/raw/`
+* Attack logs are written to `data/logs/`
+
+Each device produces:
+
+```
+data/raw/<device>_flow.pcap
+data/logs/<device>_CE.txt
+```
+
+Logs include timestamped records of each attack execution.
+
+---
+
+## Attack System
+
+CAPEX uses a registry based dispatch model.
+
+Each attack is defined by a `kind` field and mapped to an executor:
+
+* `command` executes external binaries such as `nmap` or `hping3`
+* additional attack types can be added via the registry
+
+To add a new attack:
+
+1. Define a new config entry in `attacks.yaml`
+2. Implement an executor in `src/capex/attacks/`
+3. Register it in `registry.py`
+
+No changes are required in the capture orchestration logic.
+
+---
+
+## Legacy Components
+
+The following directory is retained for reproducibility of prior work:
+
+* `scripts/oldCapScripts`
+
+This corresponds to tooling used in earlier FIRE experiments and concept drift studies.
+
+---
+
+## Tooling
+
+* Packet capture is performed using `tcpdump`
+* Flow extraction is typically performed using CICFlowMeter
+* Python environment and dependency management is handled via `uv`
 
 ---
 
 ## Notes
 
-* All PCAPs are captured using `tcpdump`
-* Network flows are extracted using [CICFlowMeter](https://www.unb.ca/cic/research/applications.html)
-* Attack scripts should be run with `sudo` due to raw socket requirements
+* Running capture and certain attack tools may require elevated privileges
+* This framework is intended for controlled and authorized environments only
+* Ensure proper isolation when generating traffic datasets
 
 ---
 
-For questions, contact: **Seth Barrett**
+## Author
+
+Seth Barrett
+Augusta University
+School of Computer and Cyber Sciences
