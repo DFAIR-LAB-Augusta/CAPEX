@@ -1,14 +1,21 @@
 from __future__ import annotations
 
 import argparse
-import logging
 
 from pathlib import Path
 
-from capex.config import ensure_directories, load_attacks, load_devices
+from capex.config import load_attacks, load_devices
+from capex.logging_utils import configure_logging
 from capex.models import CaptureConfig
+from capex.paths import ensure_capture_directories
 from capex.runner import CommandRunner
 from capex.services.capture_session import CaptureSession
+from capex.validation import (
+    validate_attacks,
+    validate_capture_config,
+    validate_config_paths,
+    validate_devices,
+)
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -70,9 +77,11 @@ def main() -> int:
     parser = build_parser()
     args = parser.parse_args()
 
-    logging.basicConfig(
-        level=logging.DEBUG if args.verbose else logging.INFO,
-        format='%(asctime)s %(levelname)s %(name)s: %(message)s',
+    configure_logging(verbose=args.verbose)
+
+    validate_config_paths(
+        devices_path=args.devices,
+        attacks_path=args.attacks,
     )
 
     config = CaptureConfig(
@@ -81,10 +90,16 @@ def main() -> int:
         output_dir=args.output_dir,
         log_dir=args.log_dir,
     )
-    ensure_directories(config)
+
+    validate_capture_config(config)
 
     devices = load_devices(args.devices).devices
     attacks = load_attacks(args.attacks).attacks
+
+    validate_devices(devices)
+    validate_attacks(attacks)
+
+    ensure_capture_directories(config)
 
     if args.device:
         allowed = set(args.device)

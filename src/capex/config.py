@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 import yaml
 
-from capex.models import AttackFile, CaptureConfig, DeviceFile
+from capex.models import AttackFile, DeviceFile
 
 if TYPE_CHECKING:
     from pathlib import Path
@@ -27,8 +27,3 @@ def load_devices(path: Path) -> DeviceFile:
 
 def load_attacks(path: Path) -> AttackFile:
     return AttackFile.model_validate(_load_yaml(path))
-
-
-def ensure_directories(config: CaptureConfig) -> None:
-    config.output_dir.mkdir(parents=True, exist_ok=True)
-    config.log_dir.mkdir(parents=True, exist_ok=True)

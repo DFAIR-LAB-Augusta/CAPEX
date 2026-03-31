@@ -105,6 +105,9 @@ class MonitorThread(threading.Thread):
         print('[*] HULK attack ended.')
 
 
+class HulkAttackExecutor: ...
+
+
 # Entry
 if __name__ == '__main__':
     if len(sys.argv) < 3:

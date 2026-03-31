@@ -5,8 +5,9 @@ import time
 
 from typing import TYPE_CHECKING
 
-from capex.attacks.builtins import TemplateAttackRenderer
+from capex.attacks.registry import AttackRegistry
 from capex.capture import TcpdumpCapture
+from capex.paths import build_log_path, build_pcap_path
 from capex.scheduler import build_schedule
 
 if TYPE_CHECKING:
@@ -27,7 +28,7 @@ class CaptureSession:
     ) -> None:
         self._runner = runner
         self._config = config
-        self._renderer = TemplateAttackRenderer()
+        self._registry = AttackRegistry(runner=runner)
 
     def run(
         self,
@@ -35,8 +36,8 @@ class CaptureSession:
         device: DeviceConfig,
         attacks: list[AttackConfig],
     ) -> None:
-        pcap_path = self._config.output_dir / f'{device.name}_flow.pcap'
-        log_path = self._config.log_dir / f'{device.name}_CE.txt'
+        pcap_path = build_pcap_path(config=self._config, device=device)
+        log_path = build_log_path(config=self._config, device=device)
 
         capture = TcpdumpCapture(
             runner=self._runner,
@@ -88,9 +89,12 @@ class CaptureSession:
                 if sleep_for > 0:
                     time.sleep(sleep_for)
 
-                command = self._renderer.render(attack, device)
+                executor = self._registry.resolve(attack)
                 now = time.time()
-                self._runner.run(command)
+                executor.execute(
+                    device=device,
+                    log_path=log_path,
+                )
 
                 handle.write(
                     'Attack: '

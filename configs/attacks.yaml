@@ -55,8 +55,10 @@ attacks:
     enabled: true
     repeats: 3
     command:
+      - uv
+      - run
       - python3
-      - hulk.py
+      - "./src/capex/attacks/hulk.py"
       - "60"
       - "http://{target_ip}"
 

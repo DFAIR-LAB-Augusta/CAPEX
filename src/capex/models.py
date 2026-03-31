@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Final
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, IPvAnyAddress, PositiveInt
 
@@ -14,14 +14,34 @@ class DeviceConfig(BaseModel):
     enabled: bool = True
 
 
-class AttackConfig(BaseModel):
+class CommandAttackConfig(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
+    kind: Literal['command'] = 'command'
     name: str = Field(min_length=1)
     label: str = Field(min_length=1)
-    command: list[str] = Field(min_length=1)
-    repeats: PositiveInt = 3
     enabled: bool = True
+    repeats: PositiveInt = 3
+    command: list[str] = Field(min_length=1)
+
+
+class PlaceholderAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['placeholder'] = 'placeholder'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = False
+    repeats: PositiveInt = 1
+    reason: str = Field(min_length=1)
+
+
+AttackConfig = CommandAttackConfig | PlaceholderAttackConfig
+
+
+class AttackFile(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    attacks: list[AttackConfig]
 
 
 class CaptureConfig(BaseModel):
@@ -36,11 +56,3 @@ class CaptureConfig(BaseModel):
 
 class DeviceFile(BaseModel):
     devices: list[DeviceConfig]
-
-
-class AttackFile(BaseModel):
-    attacks: list[AttackConfig]
-
-
-DEFAULT_PCAP_SUFFIX: Final[str] = '_flow.pcap'
-DEFAULT_LOG_SUFFIX: Final[str] = '_CE.txt'
