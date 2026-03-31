@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "capex"
-version = "1.0.0"
+version = "1.0.1"
 description = "Config-driven network attack capture orchestration for security research"
 readme = "README.md"
 requires-python = ">=3.14"
@@ -34,8 +34,12 @@ dev = [
   { include-group = "test" },
 ]
 scripting = [
-    "pandas==3.0.2"
+    "cicflowmeter",
+    "pandas==3.0.2",
 ]
+
+[tool.uv.sources]
+cicflowmeter = { git = "https://github.com/sethbarrett50/cicflowmeter" }
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/capex"]
