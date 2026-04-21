@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "capex"
-version = "1.0.2"
+version = "1.0.3"
 description = "Config-driven network attack capture orchestration for security research"
 readme = "README.md"
 requires-python = ">=3.14"
@@ -15,7 +15,6 @@ authors = [
 dependencies = [
   "PyYAML>=6.0.2",
   "pydantic>=2.11.0",
-  "rich>=14.0.0",
 ]
 
 [project.scripts]
@@ -23,7 +22,7 @@ capex = "capex.cli:main"
 
 [dependency-groups]
 lint = [
-  "ruff>=0.15.8",
+  "ruff>=0.15.9",
 ]
 test = [
   "pytest>=9.0.2",
@@ -32,6 +31,7 @@ test = [
 dev = [
   { include-group = "lint" },
   { include-group = "test" },
+  "deptry>=0.25.1",
 ]
 scripting = [
     "cicflowmeter",
@@ -56,3 +56,9 @@ pythonpath = ["src"]
 
 [tool.uv]
 package = true
+
+[tool.deptry]
+root = ["src", "scripts"]
+
+[tool.deptry.per_rule_ignores]
+DEP003 = ["capex"]
