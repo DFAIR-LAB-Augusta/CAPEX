@@ -58,3 +58,6 @@ run.dry: ## Validate config and print execution plan
 
 flows: ## Convert PCAPs in data/raw to CSVs in data/flows
 	./scripts/run_flows.sh
+
+deps.check: ## Checks dependencies
+	$(UV) run deptry .
