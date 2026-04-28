@@ -13,7 +13,7 @@
 - [ ] `make lint`
 - [ ] `make test`
 - [ ] `make preflight`
-- [ ] `make deps.bump`
+- [ ] `make deps.check`
 
 ## Notes
 <!-- Anything reviewers should know -->
