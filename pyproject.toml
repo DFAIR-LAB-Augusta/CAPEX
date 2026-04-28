@@ -63,3 +63,4 @@ root = ["src", "scripts"]
 
 [tool.deptry.per_rule_ignores]
 DEP003 = ["capex"]
+DEP004 = ["pandas"]
