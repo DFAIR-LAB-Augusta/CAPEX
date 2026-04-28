@@ -1,5 +1,5 @@
 ## Summary
-<!-- What does this change do? -->
+- 
 
 ## Changes
 - [ ] Fix
@@ -12,7 +12,8 @@
 ## Testing
 - [ ] `make lint`
 - [ ] `make test`
-- [ ] `make build`
+- [ ] `make preflight`
+- [ ] `make deps.check`
 
 ## Notes
 <!-- Anything reviewers should know -->
