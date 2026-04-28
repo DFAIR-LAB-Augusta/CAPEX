@@ -32,6 +32,7 @@ dev = [
   { include-group = "lint" },
   { include-group = "test" },
   "deptry>=0.25.1",
+  "twine>=6.2.0",
 ]
 scripting = [
     "cicflowmeter",

@@ -39,7 +39,7 @@ clean: ## Remove build artifacts
 	
 preflight: ## Build + run twine metadata checks
 	$(UV) build
-	uvx twine check dist/*
+	$(UV) tool run twine check dist/*
 
 run: ## Run CAPEX with default configs
 	$(UV) run python -m capex \
