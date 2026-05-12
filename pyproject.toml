@@ -22,7 +22,7 @@ capex = "capex.cli:main"
 
 [dependency-groups]
 lint = [
-  "ruff>=0.15.9",
+  "ruff>=0.15.12",
 ]
 test = [
   "pytest>=9.0.3",
