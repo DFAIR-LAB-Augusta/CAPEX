@@ -13,8 +13,8 @@ authors = [
   { name = "Seth Barrett" }
 ]
 dependencies = [
-  "PyYAML>=6.0.2",
-  "pydantic>=2.13.0",
+  "PyYAML>=6.0.2,<7",
+  "pydantic>=2.13.0,<3",
 ]
 
 [project.scripts]
@@ -22,11 +22,11 @@ capex = "capex.cli:main"
 
 [dependency-groups]
 dev = [
-  "ruff>=0.15.12",
-  "pytest>=9.0.3",
-  "pytest-cov>=6.0.0",
-  "deptry>=0.25.1",
-  "twine>=6.2.0",
+  "ruff>=0.15.12,<1",
+  "pytest>=9.0.3,<10",
+  "pytest-cov>=6.0.0,<7",
+  "deptry>=0.25.1,<1",
+  "twine>=6.2.0,<7",
 ]
 scripting = [
     "cicflowmeter",
