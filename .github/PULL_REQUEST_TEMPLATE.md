@@ -16,4 +16,3 @@
 - [ ] `make deps.check`
 
 ## Notes
-<!-- Anything reviewers should know -->
