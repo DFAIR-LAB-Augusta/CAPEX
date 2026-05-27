@@ -30,7 +30,7 @@ dev = [
 ]
 scripting = [
     "cicflowmeter",
-    "pandas==3.0.2",
+    "pandas==3.0.3",
     { include-group = "dev" },
 ]
 
