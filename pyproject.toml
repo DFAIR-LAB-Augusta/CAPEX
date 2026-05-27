@@ -24,7 +24,7 @@ capex = "capex.cli:main"
 dev = [
   "ruff>=0.15.12,<1",
   "pytest>=9.0.3,<10",
-  "pytest-cov>=6.0.0,<7",
+  "pytest-cov>=7.1.0,<8",
   "deptry>=0.25.1,<1",
   "twine>=6.2.0,<7",
 ]
