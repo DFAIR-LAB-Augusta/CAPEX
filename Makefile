@@ -16,7 +16,7 @@ help: ## Show targets
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
 
 sync: ## Install/sync deps (including dev group)
-	$(UV) sync --dev
+	$(UV) sync --group scripting
 
 format: ## Format code
 	$(UV) run $(RUFF) format .
