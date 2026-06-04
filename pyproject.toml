@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "capex"
-version = "1.0.7"
+version = "1.0.9"
 description = "Config-driven network attack capture orchestration for security research"
 readme = "README.md"
 requires-python = ">=3.14"
@@ -57,5 +57,6 @@ package = true
 root = ["src", "scripts"]
 
 [tool.deptry.per_rule_ignores]
+DEP001 = ["capex"]
 DEP003 = ["capex"]
 DEP004 = ["pandas"]
