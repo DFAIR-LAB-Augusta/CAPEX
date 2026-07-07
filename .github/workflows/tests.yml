@@ -19,7 +19,7 @@ jobs:
         python-version: ["3.14"]
 
     steps:
-      - uses: actions/checkout@v6.0.2
+      - uses: actions/checkout@v7.0.0
 
       - name: Show bootstrap Python and uv
         run: |
