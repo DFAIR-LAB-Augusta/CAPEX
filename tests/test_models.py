@@ -87,6 +87,7 @@ def test_arp_spoof_attack_config_defaults() -> None:
     attack = ArpSpoofAttackConfig(name='arp_spoof', label='ARP_Spoof', interface='eth0', gateway_ip='192.168.1.1')
     assert attack.duration_seconds == 30
     assert attack.arpspoof_binary == 'arpspoof'
+    assert attack.bidirectional is False
 
 
 def test_dns_tunnel_exfil_attack_config_defaults() -> None:

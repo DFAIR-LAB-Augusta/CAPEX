@@ -238,6 +238,21 @@ attacks:
     gateway_ip: 192.168.1.1
     duration_seconds: 30
 
+  # ARP Spoofing #2 (#96) - bidirectional (full) MITM. Poisons both the
+  # device's cache (as above) and the gateway's cache entry for the
+  # device, so return traffic is redirected too - real dsniff-based MITM
+  # setups need both directions; single-direction alone often doesn't
+  # achieve a working intercept.
+  - name: arp_spoof_bidirectional_mitm
+    label: ARP_Spoof_Bidirectional_MITM
+    kind: arp_spoof
+    enabled: true
+    repeats: 2
+    interface: eth0
+    gateway_ip: 192.168.1.1
+    duration_seconds: 30
+    bidirectional: true
+
   # Credential Access #2 (#91) - real entries from Mirai's published
   # default-credential table (all root:X pairs below are literal entries
   # from that table, not a synthesized cartesian product).

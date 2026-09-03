@@ -174,6 +174,7 @@ class ArpSpoofAttackConfig(BaseModel):
     gateway_ip: str = Field(min_length=1)
     duration_seconds: PositiveInt = 30
     arpspoof_binary: str = 'arpspoof'
+    bidirectional: bool = False
 
 
 class DnsTunnelExfilAttackConfig(BaseModel):

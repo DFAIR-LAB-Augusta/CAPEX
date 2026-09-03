@@ -41,13 +41,16 @@ class _FakeProcess:
 
 
 class _FakeRunner:
-    def __init__(self, process: _FakeProcess) -> None:
-        self._process = process
+    def __init__(self, process: _FakeProcess | list[_FakeProcess]) -> None:
+        self._processes = process if isinstance(process, list) else [process]
         self.popen_args: list[str] | None = None
+        self.popen_calls: list[list[str]] = []
 
     def popen(self, args, *, cwd=None):
         self.popen_args = list(args)
-        return self._process
+        self.popen_calls.append(list(args))
+        index = len(self.popen_calls) - 1
+        return self._processes[index] if index < len(self._processes) else self._processes[-1]
 
 
 def test_arp_spoof_executor_runs_for_duration_then_terminates(monkeypatch) -> None:
@@ -100,3 +103,53 @@ def test_arp_spoof_executor_kills_process_that_does_not_terminate_in_time(monkey
 
     assert process.terminate_called is True
     assert process.kill_called is True
+
+
+def test_arp_spoof_executor_bidirectional_starts_both_directions(monkeypatch) -> None:
+    victim_process = _FakeProcess(exited=False)
+    gateway_process = _FakeProcess(exited=False)
+    runner = _FakeRunner([victim_process, gateway_process])
+    monkeypatch.setattr(arp.time, 'sleep', lambda seconds: None)
+
+    device = DeviceConfig(name='dev1', ip='192.168.1.50')
+    attack = ArpSpoofAttackConfig(
+        name='arp_spoof',
+        label='ARP_Spoof',
+        interface='eth0',
+        gateway_ip='192.168.1.1',
+        duration_seconds=30,
+        bidirectional=True,
+    )
+    executor = arp.ArpSpoofExecutor(runner=runner, attack=attack)
+
+    detail = executor.execute(device=device)
+
+    assert runner.popen_calls == [
+        ['arpspoof', '-i', 'eth0', '-t', '192.168.1.50', '192.168.1.1'],
+        ['arpspoof', '-i', 'eth0', '-t', '192.168.1.1', '192.168.1.50'],
+    ]
+    assert victim_process.terminate_called is True
+    assert gateway_process.terminate_called is True
+    assert detail == 'duration_seconds=30, bidirectional=true'
+
+
+def test_arp_spoof_executor_bidirectional_raises_if_gateway_direction_exits_immediately(monkeypatch) -> None:
+    victim_process = _FakeProcess(exited=False)
+    gateway_process = _FakeProcess(exited=True, returncode=1, stderr='arpspoof: eth9: No such device exists')
+    runner = _FakeRunner([victim_process, gateway_process])
+    monkeypatch.setattr(arp.time, 'sleep', lambda seconds: None)
+
+    device = DeviceConfig(name='dev1', ip='192.168.1.50')
+    attack = ArpSpoofAttackConfig(
+        name='arp_spoof',
+        label='ARP_Spoof',
+        interface='eth9',
+        gateway_ip='192.168.1.1',
+        bidirectional=True,
+    )
+    executor = arp.ArpSpoofExecutor(runner=runner, attack=attack)
+
+    with pytest.raises(AttackExecutionError, match='No such device exists'):
+        executor.execute(device=device)
+
+    assert victim_process.terminate_called is True
