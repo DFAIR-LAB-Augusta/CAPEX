@@ -2,7 +2,13 @@ from __future__ import annotations
 
 from ipaddress import IPv4Address
 
-from capex.models import BannerGrabAttackConfig, CommandAttackConfig, DeviceConfig, SsdpDiscoveryAttackConfig
+from capex.models import (
+    BannerGrabAttackConfig,
+    CommandAttackConfig,
+    DeviceConfig,
+    HydraBruteForceAttackConfig,
+    SsdpDiscoveryAttackConfig,
+)
 
 
 def test_device_config_validates() -> None:
@@ -28,3 +34,16 @@ def test_banner_grab_attack_config_defaults() -> None:
     attack = BannerGrabAttackConfig(name='banner_grab', label='Banner_Grab')
     assert attack.port == 80
     assert attack.probe == ''
+
+
+def test_hydra_brute_force_attack_config_defaults() -> None:
+    attack = HydraBruteForceAttackConfig(
+        name='hydra_http_default_creds',
+        label='Hydra_HTTP_Default_Creds',
+        service='http-get',
+        port=80,
+        username_list=['admin'],
+        password_list=['admin'],
+    )
+    assert attack.max_attempts == 10
+    assert attack.tasks == 1

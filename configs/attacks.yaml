@@ -85,6 +85,24 @@ attacks:
     timeout_seconds: 5
     probe: "HEAD / HTTP/1.0\r\nHost: {target_ip}\r\n\r\n"
 
+  # Credential Access (#76)
+  - name: hydra_http_default_creds
+    label: Hydra_HTTP_Default_Creds
+    kind: hydra_brute_force
+    enabled: true
+    repeats: 3
+    service: http-get
+    port: 80
+    username_list:
+      - admin
+      - root
+    password_list:
+      - admin
+      - "1234"
+      - password
+    max_attempts: 6
+    tasks: 1
+
   # - name: http_request
   #   label: HTTP_Request
   #   enabled: false

@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
+from capex.attacks.credential_access import HydraBruteForceExecutor
 from capex.attacks.discovery import BannerGrabExecutor, SsdpDiscoveryExecutor
 from capex.attacks.hulk import HulkAttackExecutor
 from capex.exceptions import RegistryError
@@ -38,6 +39,11 @@ class AttackRegistry:
                 )
             case 'banner_grab':
                 return BannerGrabExecutor(
+                    attack=attack,
+                )
+            case 'hydra_brute_force':
+                return HydraBruteForceExecutor(
+                    runner=self._runner,
                     attack=attack,
                 )
             case _:
