@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, IPvAnyAddress, PositiveInt
+from pydantic import BaseModel, ConfigDict, Field, IPvAnyAddress, NonNegativeInt, PositiveInt
 
 
 class DeviceConfig(BaseModel):
@@ -48,6 +48,30 @@ class HulkAttackConfig(BaseModel):
     thread_count: PositiveInt = 100
 
 
+class SsdpDiscoveryAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['ssdp_discovery'] = 'ssdp_discovery'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 3
+    timeout_seconds: PositiveInt = 3
+
+
+class BannerGrabAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['banner_grab'] = 'banner_grab'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 3
+    port: PositiveInt = 80
+    timeout_seconds: PositiveInt = 5
+    probe: str = ''
+
+
 class HydraBruteForceAttackConfig(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
@@ -65,7 +89,90 @@ class HydraBruteForceAttackConfig(BaseModel):
     hydra_binary: str = 'hydra'
 
 
-AttackConfig = CommandAttackConfig | PlaceholderAttackConfig | HulkAttackConfig | HydraBruteForceAttackConfig
+class HttpFuzzAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['http_fuzz'] = 'http_fuzz'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 3
+    port: PositiveInt = 80
+    paths: list[str] = Field(min_length=1)
+    timeout_seconds: PositiveInt = 5
+
+
+class C2BeaconAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['c2_beacon'] = 'c2_beacon'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 3
+    port: PositiveInt = 80
+    path: str = '/'
+    jitter_seconds: NonNegativeInt = 5
+    timeout_seconds: PositiveInt = 5
+
+
+class ExfilSimAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['exfil_sim'] = 'exfil_sim'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 3
+    port: PositiveInt = 80
+    path: str = '/upload'
+    payload_size_bytes: PositiveInt = 1_000_000
+    chunk_size_bytes: PositiveInt = 65_536
+    timeout_seconds: PositiveInt = 10
+
+
+class ConfigTamperAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['config_tamper'] = 'config_tamper'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = False
+    repeats: PositiveInt = 3
+    port: PositiveInt = 80
+    path: str = Field(min_length=1)
+    method: str = 'POST'
+    body: str = Field(min_length=1)
+    timeout_seconds: PositiveInt = 5
+
+
+class ArpSpoofAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['arp_spoof'] = 'arp_spoof'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 3
+    interface: str = Field(min_length=1)
+    gateway_ip: str = Field(min_length=1)
+    duration_seconds: PositiveInt = 30
+    arpspoof_binary: str = 'arpspoof'
+
+
+AttackConfig = (
+    CommandAttackConfig
+    | PlaceholderAttackConfig
+    | HulkAttackConfig
+    | SsdpDiscoveryAttackConfig
+    | BannerGrabAttackConfig
+    | HydraBruteForceAttackConfig
+    | HttpFuzzAttackConfig
+    | C2BeaconAttackConfig
+    | ExfilSimAttackConfig
+    | ConfigTamperAttackConfig
+    | ArpSpoofAttackConfig
+)
 
 
 class AttackFile(BaseModel):
