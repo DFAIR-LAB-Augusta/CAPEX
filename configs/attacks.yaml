@@ -188,6 +188,28 @@ attacks:
       - configs/payloads/ssdp_msearch.txt
       - "{target_ip}"
 
+  # Reflection/Amplification DDoS #2 (#95) - mDNS (Bonjour) amplification.
+  # 192.168.1.250 is the same decoy spoofed-victim IP used by #81, not a
+  # real device. Unlike DNS/NTP, mDNS is viable against this lab's devices
+  # since consumer smart-home hardware commonly implements it for local
+  # discovery (same reasoning that made SSDP reflection viable in #81).
+  - name: mdns_reflection
+    label: MDNS_Reflection
+    enabled: true
+    repeats: 3
+    command:
+      - hping3
+      - --spoof
+      - 192.168.1.250
+      - --udp
+      - -c
+      - "5"
+      - -p
+      - "5353"
+      - -E
+      - configs/payloads/mdns_query.bin
+      - "{target_ip}"
+
   # Impact beyond flooding (#80)
   # Left disabled by default (and the config_tamper kind itself defaults to
   # enabled: false at the model level) - the request below is real and
