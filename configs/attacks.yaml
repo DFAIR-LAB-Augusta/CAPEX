@@ -57,6 +57,52 @@ attacks:
     repeats: 3
     duration_seconds: 60
 
+  # Reconnaissance / Discovery (#75)
+  - name: nmap_service_detection
+    label: Nmap_Service_Detection
+    enabled: true
+    repeats: 3
+    command:
+      - nmap
+      - -sV
+      - -p
+      - 1-1000
+      - "{target_ip}"
+
+  - name: ssdp_discovery
+    label: SSDP_Discovery
+    kind: ssdp_discovery
+    enabled: true
+    repeats: 3
+    timeout_seconds: 3
+
+  - name: banner_grab_http
+    label: Banner_Grab_HTTP
+    kind: banner_grab
+    enabled: true
+    repeats: 3
+    port: 80
+    timeout_seconds: 5
+    probe: "HEAD / HTTP/1.0\r\nHost: {target_ip}\r\n\r\n"
+
+  # Credential Access (#76)
+  - name: hydra_http_default_creds
+    label: Hydra_HTTP_Default_Creds
+    kind: hydra_brute_force
+    enabled: true
+    repeats: 3
+    service: http-get
+    port: 80
+    username_list:
+      - admin
+      - root
+    password_list:
+      - admin
+      - "1234"
+      - password
+    max_attempts: 6
+    tasks: 1
+
   # Application-layer (#77)
   - name: slowloris
     label: Slowloris
