@@ -68,6 +68,17 @@ attacks:
     jitter_seconds: 5
     timeout_seconds: 5
 
+  # Lateral Movement / C2 #2 (#92)
+  - name: c2_dns_beacon
+    label: C2_DNS_Beacon
+    kind: c2_dns_beacon
+    enabled: true
+    repeats: 5
+    port: 53
+    domain: update-check.example
+    jitter_seconds: 5
+    timeout_seconds: 5
+
   # - name: http_request
   #   label: HTTP_Request
   #   enabled: false

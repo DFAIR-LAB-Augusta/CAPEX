@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ipaddress import IPv4Address
 
-from capex.models import C2BeaconAttackConfig, CommandAttackConfig, DeviceConfig
+from capex.models import C2BeaconAttackConfig, C2DnsBeaconAttackConfig, CommandAttackConfig, DeviceConfig
 
 
 def test_device_config_validates() -> None:
@@ -23,3 +23,9 @@ def test_c2_beacon_attack_config_defaults() -> None:
     attack = C2BeaconAttackConfig(name='c2_beacon', label='C2_Beacon')
     assert attack.jitter_seconds == 5
     assert attack.path == '/'
+
+
+def test_c2_dns_beacon_attack_config_defaults() -> None:
+    attack = C2DnsBeaconAttackConfig(name='c2_dns_beacon', label='C2_DNS_Beacon')
+    assert attack.port == 53
+    assert attack.domain == 'update-check.example'

@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
 from capex.attacks.c2 import C2BeaconExecutor
+from capex.attacks.c2_dns import DnsC2BeaconExecutor
 from capex.attacks.hulk import HulkAttackExecutor
 from capex.exceptions import RegistryError
 
@@ -34,6 +35,10 @@ class AttackRegistry:
                 )
             case 'c2_beacon':
                 return C2BeaconExecutor(
+                    attack=attack,
+                )
+            case 'c2_dns_beacon':
+                return DnsC2BeaconExecutor(
                     attack=attack,
                 )
             case _:

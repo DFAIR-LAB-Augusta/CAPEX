@@ -165,6 +165,7 @@ Each attack is defined by a `kind` field and mapped to an executor:
 * `command` executes external binaries such as `nmap` or `hping3`
 * `hulk` runs an in-process HTTP flood (HULK) against the target device; configurable via `duration_seconds` and `thread_count`
 * `c2_beacon` sends a single jittered check-in request per invocation, mimicking botnet C2 callback traffic; configurable via `port`, `path`, and `jitter_seconds`
+* `c2_dns_beacon` sends a single jittered real DNS query per invocation as a C2 check-in beacon over UDP/53, distinct wire shape from `c2_beacon`; configurable via `port`, `domain`, and `jitter_seconds`
 * `placeholder` is a disabled stub for attacks not yet implemented (cannot be `enabled: true`)
 * additional attack types can be added via the registry
 
