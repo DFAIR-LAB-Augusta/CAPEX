@@ -4,6 +4,7 @@ import types
 
 import pytest
 
+from capex.attacks.application_layer import HttpFuzzExecutor
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
 from capex.attacks.credential_access import HydraBruteForceExecutor
 from capex.attacks.discovery import BannerGrabExecutor, SsdpDiscoveryExecutor
@@ -13,6 +14,7 @@ from capex.exceptions import RegistryError
 from capex.models import (
     BannerGrabAttackConfig,
     CommandAttackConfig,
+    HttpFuzzAttackConfig,
     HulkAttackConfig,
     HydraBruteForceAttackConfig,
     PlaceholderAttackConfig,
@@ -90,6 +92,17 @@ def test_registry_resolves_hydra_brute_force_attack() -> None:
     )
     resolved = registry.resolve(attack)
     assert isinstance(resolved, HydraBruteForceExecutor)
+
+
+def test_registry_resolves_http_fuzz_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = HttpFuzzAttackConfig(
+        name='http_fuzz',
+        label='HTTP_Fuzz',
+        paths=['/../../../../etc/passwd'],
+    )
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, HttpFuzzExecutor)
 
 
 def test_registry_raises_registry_error_for_unsupported_kind() -> None:

@@ -167,6 +167,7 @@ Each attack is defined by a `kind` field and mapped to an executor:
 * `ssdp_discovery` sends a unicast SSDP M-SEARCH probe to the target device; configurable via `timeout_seconds`
 * `banner_grab` connects to a device port and reports whatever banner it sends back; configurable via `port`, `timeout_seconds`, and an optional `probe`
 * `hydra_brute_force` runs real `hydra` against a device using a combo file built (and capped) from `username_list`/`password_list`/`max_attempts`, so the attempt cap is enforced in code rather than trusted to CLI flags
+* `http_fuzz` sends malformed/fuzzed and traversal HTTP requests (`paths`) to a device's web UI on a configurable `port`
 * `placeholder` is a disabled stub for attacks not yet implemented (cannot be `enabled: true`)
 * additional attack types can be added via the registry
 

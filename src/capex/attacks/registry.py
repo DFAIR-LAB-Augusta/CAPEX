@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from capex.attacks.application_layer import HttpFuzzExecutor
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
 from capex.attacks.credential_access import HydraBruteForceExecutor
 from capex.attacks.discovery import BannerGrabExecutor, SsdpDiscoveryExecutor
@@ -44,6 +45,10 @@ class AttackRegistry:
             case 'hydra_brute_force':
                 return HydraBruteForceExecutor(
                     runner=self._runner,
+                    attack=attack,
+                )
+            case 'http_fuzz':
+                return HttpFuzzExecutor(
                     attack=attack,
                 )
             case _:
