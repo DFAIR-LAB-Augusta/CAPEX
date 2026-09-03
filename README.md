@@ -92,6 +92,10 @@ Attack types are resolved through the internal registry and can be extended with
 
 ## Usage
 
+For a full walkthrough — prerequisites, system package install, lab
+setup, safety notes — see [docs/USAGE.md](docs/USAGE.md). Quick
+reference:
+
 ### Install dependencies
 
 ```bash
@@ -103,6 +107,10 @@ or directly:
 ```bash
 uv sync --dev
 ```
+
+CAPEX's attack library also shells out to real system tools (`nmap`,
+`hping3`, `hydra`, etc.) — install those with `./scripts/install-deps.sh`
+(Debian/Ubuntu, run as root), or see docs/USAGE.md for other platforms.
 
 ---
 
