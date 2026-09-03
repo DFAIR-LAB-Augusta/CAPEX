@@ -12,6 +12,7 @@ from capex.attacks.c2_dns import DnsC2BeaconExecutor
 from capex.attacks.credential_access import HydraBruteForceExecutor
 from capex.attacks.discovery import BannerGrabExecutor, SsdpDiscoveryExecutor
 from capex.attacks.exfil import ExfilSimExecutor
+from capex.attacks.exfil_dns import DnsTunnelExfilExecutor
 from capex.attacks.hulk import HulkAttackExecutor
 from capex.attacks.impact import ConfigTamperExecutor
 from capex.attacks.registry import AttackRegistry
@@ -23,6 +24,7 @@ from capex.models import (
     C2DnsBeaconAttackConfig,
     CommandAttackConfig,
     ConfigTamperAttackConfig,
+    DnsTunnelExfilAttackConfig,
     ExfilSimAttackConfig,
     HttpFuzzAttackConfig,
     HulkAttackConfig,
@@ -158,6 +160,13 @@ def test_registry_resolves_arp_spoof_attack() -> None:
     )
     resolved = registry.resolve(attack)
     assert isinstance(resolved, ArpSpoofExecutor)
+
+
+def test_registry_resolves_dns_tunnel_exfil_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = DnsTunnelExfilAttackConfig(name='dns_tunnel_exfil', label='DNS_Tunnel_Exfil')
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, DnsTunnelExfilExecutor)
 
 
 def test_registry_raises_registry_error_for_unsupported_kind() -> None:

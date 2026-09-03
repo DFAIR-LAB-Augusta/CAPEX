@@ -176,6 +176,21 @@ class ArpSpoofAttackConfig(BaseModel):
     arpspoof_binary: str = 'arpspoof'
 
 
+class DnsTunnelExfilAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['dns_tunnel_exfil'] = 'dns_tunnel_exfil'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 3
+    port: PositiveInt = 53
+    base_domain: str = 'exfil.example'
+    payload_size_bytes: PositiveInt = 512
+    chunk_size_bytes: PositiveInt = 32
+    timeout_seconds: PositiveInt = 3
+
+
 AttackConfig = (
     CommandAttackConfig
     | PlaceholderAttackConfig
@@ -189,6 +204,7 @@ AttackConfig = (
     | ExfilSimAttackConfig
     | ConfigTamperAttackConfig
     | ArpSpoofAttackConfig
+    | DnsTunnelExfilAttackConfig
 )
 
 
