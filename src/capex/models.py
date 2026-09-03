@@ -146,6 +146,20 @@ class ConfigTamperAttackConfig(BaseModel):
     timeout_seconds: PositiveInt = 5
 
 
+class ArpSpoofAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['arp_spoof'] = 'arp_spoof'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 3
+    interface: str = Field(min_length=1)
+    gateway_ip: str = Field(min_length=1)
+    duration_seconds: PositiveInt = 30
+    arpspoof_binary: str = 'arpspoof'
+
+
 AttackConfig = (
     CommandAttackConfig
     | PlaceholderAttackConfig
@@ -157,6 +171,7 @@ AttackConfig = (
     | C2BeaconAttackConfig
     | ExfilSimAttackConfig
     | ConfigTamperAttackConfig
+    | ArpSpoofAttackConfig
 )
 
 

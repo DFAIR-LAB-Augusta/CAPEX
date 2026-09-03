@@ -5,6 +5,7 @@ import types
 import pytest
 
 from capex.attacks.application_layer import HttpFuzzExecutor
+from capex.attacks.arp import ArpSpoofExecutor
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
 from capex.attacks.c2 import C2BeaconExecutor
 from capex.attacks.credential_access import HydraBruteForceExecutor
@@ -15,6 +16,7 @@ from capex.attacks.impact import ConfigTamperExecutor
 from capex.attacks.registry import AttackRegistry
 from capex.exceptions import RegistryError
 from capex.models import (
+    ArpSpoofAttackConfig,
     BannerGrabAttackConfig,
     C2BeaconAttackConfig,
     CommandAttackConfig,
@@ -135,6 +137,18 @@ def test_registry_resolves_config_tamper_attack() -> None:
     )
     resolved = registry.resolve(attack)
     assert isinstance(resolved, ConfigTamperExecutor)
+
+
+def test_registry_resolves_arp_spoof_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = ArpSpoofAttackConfig(
+        name='arp_spoof',
+        label='ARP_Spoof',
+        interface='eth0',
+        gateway_ip='192.168.1.1',
+    )
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, ArpSpoofExecutor)
 
 
 def test_registry_raises_registry_error_for_unsupported_kind() -> None:

@@ -3,6 +3,7 @@ from __future__ import annotations
 from ipaddress import IPv4Address
 
 from capex.models import (
+    ArpSpoofAttackConfig,
     BannerGrabAttackConfig,
     C2BeaconAttackConfig,
     CommandAttackConfig,
@@ -72,3 +73,9 @@ def test_exfil_sim_attack_config_defaults() -> None:
     attack = ExfilSimAttackConfig(name='exfil_sim', label='Exfil_Sim')
     assert attack.payload_size_bytes == 1_000_000
     assert attack.chunk_size_bytes == 65_536
+
+
+def test_arp_spoof_attack_config_defaults() -> None:
+    attack = ArpSpoofAttackConfig(name='arp_spoof', label='ARP_Spoof', interface='eth0', gateway_ip='192.168.1.1')
+    assert attack.duration_seconds == 30
+    assert attack.arpspoof_binary == 'arpspoof'

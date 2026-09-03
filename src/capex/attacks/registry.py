@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from capex.attacks.application_layer import HttpFuzzExecutor
+from capex.attacks.arp import ArpSpoofExecutor
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
 from capex.attacks.c2 import C2BeaconExecutor
 from capex.attacks.credential_access import HydraBruteForceExecutor
@@ -64,6 +65,11 @@ class AttackRegistry:
                 )
             case 'config_tamper':
                 return ConfigTamperExecutor(
+                    attack=attack,
+                )
+            case 'arp_spoof':
+                return ArpSpoofExecutor(
+                    runner=self._runner,
                     attack=attack,
                 )
             case _:
