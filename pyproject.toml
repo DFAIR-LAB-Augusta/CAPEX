@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling>=1.29"]
+requires = ["hatchling>=1.31.0"]
 build-backend = "hatchling.build"
 
 [project]
@@ -22,11 +22,11 @@ capex = "capex.cli:main"
 
 [dependency-groups]
 dev = [
-  "ruff>=0.15.12,<1",
-  "pytest>=9.0.3,<10",
+  "ruff>=0.16.0,<1",
+  "pytest>=9.1.1,<10",
   "pytest-cov>=7.1.0,<8",
   "deptry>=0.25.1,<1",
-  "twine>=6.2.0,<7",
+  "twine>=7.0.0,<8",
 ]
 scripting = [
     "cicflowmeter",
