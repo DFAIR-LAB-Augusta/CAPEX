@@ -57,6 +57,18 @@ attacks:
     repeats: 3
     duration_seconds: 60
 
+  # Exfiltration #2 (#93)
+  - name: dns_tunnel_exfil
+    label: DNS_Tunnel_Exfil
+    kind: dns_tunnel_exfil
+    enabled: true
+    repeats: 3
+    port: 53
+    base_domain: exfil.example
+    payload_size_bytes: 512
+    chunk_size_bytes: 32
+    timeout_seconds: 3
+
   # - name: http_request
   #   label: HTTP_Request
   #   enabled: false

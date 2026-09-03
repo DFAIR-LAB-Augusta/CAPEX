@@ -164,6 +164,7 @@ Each attack is defined by a `kind` field and mapped to an executor:
 
 * `command` executes external binaries such as `nmap` or `hping3`
 * `hulk` runs an in-process HTTP flood (HULK) against the target device; configurable via `duration_seconds` and `thread_count`
+* `dns_tunnel_exfil` encodes a staged payload as base32 subdomain labels sent via periodic real DNS queries, simulating DNS-tunneling exfiltration; configurable via `payload_size_bytes`, `chunk_size_bytes`, and `base_domain`
 * `placeholder` is a disabled stub for attacks not yet implemented (cannot be `enabled: true`)
 * additional attack types can be added via the registry
 

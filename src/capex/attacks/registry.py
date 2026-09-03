@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
+from capex.attacks.exfil_dns import DnsTunnelExfilExecutor
 from capex.attacks.hulk import HulkAttackExecutor
 from capex.exceptions import RegistryError
 
@@ -29,6 +30,10 @@ class AttackRegistry:
                 )
             case 'hulk':
                 return HulkAttackExecutor(
+                    attack=attack,
+                )
+            case 'dns_tunnel_exfil':
+                return DnsTunnelExfilExecutor(
                     attack=attack,
                 )
             case _:

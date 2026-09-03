@@ -5,10 +5,11 @@ import types
 import pytest
 
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
+from capex.attacks.exfil_dns import DnsTunnelExfilExecutor
 from capex.attacks.hulk import HulkAttackExecutor
 from capex.attacks.registry import AttackRegistry
 from capex.exceptions import RegistryError
-from capex.models import CommandAttackConfig, HulkAttackConfig, PlaceholderAttackConfig
+from capex.models import CommandAttackConfig, DnsTunnelExfilAttackConfig, HulkAttackConfig, PlaceholderAttackConfig
 from capex.runner import CommandRunner
 
 
@@ -45,6 +46,13 @@ def test_registry_resolves_hulk_attack() -> None:
     )
     resolved = registry.resolve(attack)
     assert isinstance(resolved, HulkAttackExecutor)
+
+
+def test_registry_resolves_dns_tunnel_exfil_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = DnsTunnelExfilAttackConfig(name='dns_tunnel_exfil', label='DNS_Tunnel_Exfil')
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, DnsTunnelExfilExecutor)
 
 
 def test_registry_raises_registry_error_for_unsupported_kind() -> None:
