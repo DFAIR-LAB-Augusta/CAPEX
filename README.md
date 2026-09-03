@@ -164,6 +164,13 @@ Each attack is defined by a `kind` field and mapped to an executor:
 
 * `command` executes external binaries such as `nmap` or `hping3`
 * `hulk` runs an in-process HTTP flood (HULK) against the target device; configurable via `duration_seconds` and `thread_count`
+* `ssdp_discovery` sends a unicast SSDP M-SEARCH probe to the target device; configurable via `timeout_seconds`
+* `banner_grab` connects to a device port and reports whatever banner it sends back; configurable via `port`, `timeout_seconds`, and an optional `probe`
+* `hydra_brute_force` runs real `hydra` against a device using a combo file built (and capped) from `username_list`/`password_list`/`max_attempts`, so the attempt cap is enforced in code rather than trusted to CLI flags
+* `http_fuzz` sends malformed/fuzzed and traversal HTTP requests (`paths`) to a device's web UI on a configurable `port`
+* `c2_beacon` sends a single jittered check-in request per invocation, mimicking botnet C2 callback traffic; configurable via `port`, `path`, and `jitter_seconds`
+* `exfil_sim` sends a bulk outbound POST burst simulating data-staging/exfil traffic; configurable via `payload_size_bytes` and `chunk_size_bytes`
+* `config_tamper` sends a real config/firmware-tampering-shaped HTTP request (`path`, `method`, `body`) and reports the response status; defaults to `enabled: false` at the model level - each entry needs per-device safety vetting before it's turned on, since a payload that succeeds could brick real hardware
 * `arp_spoof` runs real `arpspoof` against a device for a bounded `duration_seconds`, poisoning its ARP relationship with `gateway_ip` on `interface` (classic on-path MITM)
 * `placeholder` is a disabled stub for attacks not yet implemented (cannot be `enabled: true`)
 * additional attack types can be added via the registry
