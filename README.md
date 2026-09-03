@@ -169,6 +169,7 @@ Each attack is defined by a `kind` field and mapped to an executor:
 * `hydra_brute_force` runs real `hydra` against a device using a combo file built (and capped) from `username_list`/`password_list`/`max_attempts`, so the attempt cap is enforced in code rather than trusted to CLI flags
 * `http_fuzz` sends malformed/fuzzed and traversal HTTP requests (`paths`) to a device's web UI on a configurable `port`
 * `c2_beacon` sends a single jittered check-in request per invocation, mimicking botnet C2 callback traffic; configurable via `port`, `path`, and `jitter_seconds`
+* `c2_dns_beacon` sends a single jittered real DNS query per invocation as a C2 check-in beacon over UDP/53, distinct wire shape from `c2_beacon`; configurable via `port`, `domain`, and `jitter_seconds`
 * `exfil_sim` sends a bulk outbound POST burst simulating data-staging/exfil traffic; configurable via `payload_size_bytes` and `chunk_size_bytes`
 * `config_tamper` sends a real config/firmware-tampering-shaped HTTP request (`path`, `method`, `body`) and reports the response status; defaults to `enabled: false` at the model level - each entry needs per-device safety vetting before it's turned on, since a payload that succeeds could brick real hardware
 * `arp_spoof` runs real `arpspoof` against a device for a bounded `duration_seconds`, poisoning its ARP relationship with `gateway_ip` on `interface` (classic on-path MITM)

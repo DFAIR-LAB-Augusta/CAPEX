@@ -8,6 +8,7 @@ from capex.attacks.application_layer import HttpFuzzExecutor
 from capex.attacks.arp import ArpSpoofExecutor
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
 from capex.attacks.c2 import C2BeaconExecutor
+from capex.attacks.c2_dns import DnsC2BeaconExecutor
 from capex.attacks.credential_access import HydraBruteForceExecutor
 from capex.attacks.discovery import BannerGrabExecutor, SsdpDiscoveryExecutor
 from capex.attacks.exfil import ExfilSimExecutor
@@ -20,6 +21,7 @@ from capex.models import (
     ArpSpoofAttackConfig,
     BannerGrabAttackConfig,
     C2BeaconAttackConfig,
+    C2DnsBeaconAttackConfig,
     CommandAttackConfig,
     ConfigTamperAttackConfig,
     DnsTunnelExfilAttackConfig,
@@ -120,6 +122,13 @@ def test_registry_resolves_c2_beacon_attack() -> None:
     attack = C2BeaconAttackConfig(name='c2_beacon', label='C2_Beacon')
     resolved = registry.resolve(attack)
     assert isinstance(resolved, C2BeaconExecutor)
+
+
+def test_registry_resolves_c2_dns_beacon_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = C2DnsBeaconAttackConfig(name='c2_dns_beacon', label='C2_DNS_Beacon')
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, DnsC2BeaconExecutor)
 
 
 def test_registry_resolves_exfil_sim_attack() -> None:
