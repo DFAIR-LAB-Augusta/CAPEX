@@ -24,10 +24,15 @@ class ConfigTamperExecutor:
     def execute(self, *, device: DeviceConfig) -> str | None:
         host = str(device.ip)
         body = self._attack.body.format(target_ip=host).encode()
+
+        headers = f'Content-Type: {self._attack.content_type}\r\n'
+        if self._attack.soap_action:
+            headers += f'SOAPAction: "{self._attack.soap_action}"\r\n'
+
         request = (
             f'{self._attack.method} {self._attack.path} HTTP/1.1\r\n'
             f'Host: {host}\r\n'
-            'Content-Type: application/x-www-form-urlencoded\r\n'
+            f'{headers}'
             f'Content-Length: {len(body)}\r\n'
             'Connection: close\r\n\r\n'
         ).encode() + body
