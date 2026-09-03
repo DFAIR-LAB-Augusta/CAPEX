@@ -164,6 +164,7 @@ Each attack is defined by a `kind` field and mapped to an executor:
 
 * `command` executes external binaries such as `nmap` or `hping3`
 * `hulk` runs an in-process HTTP flood (HULK) against the target device; configurable via `duration_seconds` and `thread_count`
+* `arp_spoof` runs real `arpspoof` against a device for a bounded `duration_seconds`, poisoning its ARP relationship with `gateway_ip` on `interface` (classic on-path MITM)
 * `placeholder` is a disabled stub for attacks not yet implemented (cannot be `enabled: true`)
 * additional attack types can be added via the registry
 

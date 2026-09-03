@@ -57,6 +57,18 @@ attacks:
     repeats: 3
     duration_seconds: 60
 
+  # ARP Spoofing / MITM (#82)
+  # interface/gateway_ip are placeholders - verify these match the actual
+  # lab NIC and router address before enabling.
+  - name: arp_spoof_gateway_mitm
+    label: ARP_Spoof_Gateway_MITM
+    kind: arp_spoof
+    enabled: true
+    repeats: 2
+    interface: eth0
+    gateway_ip: 192.168.1.1
+    duration_seconds: 30
+
   # - name: http_request
   #   label: HTTP_Request
   #   enabled: false

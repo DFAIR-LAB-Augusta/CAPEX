@@ -4,11 +4,12 @@ import types
 
 import pytest
 
+from capex.attacks.arp import ArpSpoofExecutor
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
 from capex.attacks.hulk import HulkAttackExecutor
 from capex.attacks.registry import AttackRegistry
 from capex.exceptions import RegistryError
-from capex.models import CommandAttackConfig, HulkAttackConfig, PlaceholderAttackConfig
+from capex.models import ArpSpoofAttackConfig, CommandAttackConfig, HulkAttackConfig, PlaceholderAttackConfig
 from capex.runner import CommandRunner
 
 
@@ -45,6 +46,18 @@ def test_registry_resolves_hulk_attack() -> None:
     )
     resolved = registry.resolve(attack)
     assert isinstance(resolved, HulkAttackExecutor)
+
+
+def test_registry_resolves_arp_spoof_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = ArpSpoofAttackConfig(
+        name='arp_spoof',
+        label='ARP_Spoof',
+        interface='eth0',
+        gateway_ip='192.168.1.1',
+    )
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, ArpSpoofExecutor)
 
 
 def test_registry_raises_registry_error_for_unsupported_kind() -> None:
