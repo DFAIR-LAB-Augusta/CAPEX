@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
 from capex.attacks.credential_access import HydraBruteForceExecutor
+from capex.attacks.discovery import BannerGrabExecutor, SsdpDiscoveryExecutor
 from capex.attacks.hulk import HulkAttackExecutor
 from capex.exceptions import RegistryError
 
@@ -30,6 +31,14 @@ class AttackRegistry:
                 )
             case 'hulk':
                 return HulkAttackExecutor(
+                    attack=attack,
+                )
+            case 'ssdp_discovery':
+                return SsdpDiscoveryExecutor(
+                    attack=attack,
+                )
+            case 'banner_grab':
+                return BannerGrabExecutor(
                     attack=attack,
                 )
             case 'hydra_brute_force':

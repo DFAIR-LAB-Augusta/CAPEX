@@ -48,6 +48,30 @@ class HulkAttackConfig(BaseModel):
     thread_count: PositiveInt = 100
 
 
+class SsdpDiscoveryAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['ssdp_discovery'] = 'ssdp_discovery'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 3
+    timeout_seconds: PositiveInt = 3
+
+
+class BannerGrabAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['banner_grab'] = 'banner_grab'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 3
+    port: PositiveInt = 80
+    timeout_seconds: PositiveInt = 5
+    probe: str = ''
+
+
 class HydraBruteForceAttackConfig(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
@@ -65,7 +89,14 @@ class HydraBruteForceAttackConfig(BaseModel):
     hydra_binary: str = 'hydra'
 
 
-AttackConfig = CommandAttackConfig | PlaceholderAttackConfig | HulkAttackConfig | HydraBruteForceAttackConfig
+AttackConfig = (
+    CommandAttackConfig
+    | PlaceholderAttackConfig
+    | HulkAttackConfig
+    | SsdpDiscoveryAttackConfig
+    | BannerGrabAttackConfig
+    | HydraBruteForceAttackConfig
+)
 
 
 class AttackFile(BaseModel):

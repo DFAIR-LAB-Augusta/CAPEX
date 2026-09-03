@@ -6,14 +6,17 @@ import pytest
 
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
 from capex.attacks.credential_access import HydraBruteForceExecutor
+from capex.attacks.discovery import BannerGrabExecutor, SsdpDiscoveryExecutor
 from capex.attacks.hulk import HulkAttackExecutor
 from capex.attacks.registry import AttackRegistry
 from capex.exceptions import RegistryError
 from capex.models import (
+    BannerGrabAttackConfig,
     CommandAttackConfig,
     HulkAttackConfig,
     HydraBruteForceAttackConfig,
     PlaceholderAttackConfig,
+    SsdpDiscoveryAttackConfig,
 )
 from capex.runner import CommandRunner
 
@@ -51,6 +54,28 @@ def test_registry_resolves_hulk_attack() -> None:
     )
     resolved = registry.resolve(attack)
     assert isinstance(resolved, HulkAttackExecutor)
+
+
+def test_registry_resolves_ssdp_discovery_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = SsdpDiscoveryAttackConfig(
+        name='ssdp_discovery',
+        label='SSDP_Discovery',
+        kind='ssdp_discovery',
+    )
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, SsdpDiscoveryExecutor)
+
+
+def test_registry_resolves_banner_grab_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = BannerGrabAttackConfig(
+        name='banner_grab',
+        label='Banner_Grab',
+        kind='banner_grab',
+    )
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, BannerGrabExecutor)
 
 
 def test_registry_resolves_hydra_brute_force_attack() -> None:
