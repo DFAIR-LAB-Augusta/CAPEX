@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from ipaddress import IPv4Address
 
-from capex.models import CommandAttackConfig, DeviceConfig
+from capex.models import BannerGrabAttackConfig, CommandAttackConfig, DeviceConfig, SsdpDiscoveryAttackConfig
 
 
 def test_device_config_validates() -> None:
@@ -17,3 +17,14 @@ def test_attack_config_validates() -> None:
         command=['hping3', '--udp', '-c', '100', '-p', '53', '{target_ip}'],
     )
     assert attack.repeats == 3
+
+
+def test_ssdp_discovery_attack_config_defaults() -> None:
+    attack = SsdpDiscoveryAttackConfig(name='ssdp_discovery', label='SSDP_Discovery')
+    assert attack.timeout_seconds == 3
+
+
+def test_banner_grab_attack_config_defaults() -> None:
+    attack = BannerGrabAttackConfig(name='banner_grab', label='Banner_Grab')
+    assert attack.port == 80
+    assert attack.probe == ''
