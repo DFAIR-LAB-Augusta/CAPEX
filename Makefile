@@ -10,7 +10,7 @@ ATTACKS ?= configs/attacks.yaml
 DURATION ?= 28800
 SAFE_PERIOD ?= 900
 
-.PHONY: help sync lint format check test run sample build clean
+.PHONY: help sync lint format check test run run-device dry-run build clean preflight flows deps.check
 
 help: ## Show targets
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[36m%-12s\033[0m %s\n", $$1, $$2}'
@@ -48,7 +48,15 @@ run: ## Run CAPEX with default configs
 		--duration-seconds $(DURATION) \
 		--safe-period-seconds $(SAFE_PERIOD)
 
-run.dry: ## Validate config and print execution plan
+run-device: ## Run CAPEX for a single device (DEVICE=name)
+	$(UV) run python -m capex \
+		--devices $(DEVICES) \
+		--attacks $(ATTACKS) \
+		--duration-seconds $(DURATION) \
+		--safe-period-seconds $(SAFE_PERIOD) \
+		--device $(DEVICE)
+
+dry-run: ## Validate config and print execution plan
 	$(UV) run python -m capex \
 		--dry-run \
 		--devices $(DEVICES) \
