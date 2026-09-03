@@ -5,10 +5,16 @@ import types
 import pytest
 
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
+from capex.attacks.credential_access import HydraBruteForceExecutor
 from capex.attacks.hulk import HulkAttackExecutor
 from capex.attacks.registry import AttackRegistry
 from capex.exceptions import RegistryError
-from capex.models import CommandAttackConfig, HulkAttackConfig, PlaceholderAttackConfig
+from capex.models import (
+    CommandAttackConfig,
+    HulkAttackConfig,
+    HydraBruteForceAttackConfig,
+    PlaceholderAttackConfig,
+)
 from capex.runner import CommandRunner
 
 
@@ -45,6 +51,20 @@ def test_registry_resolves_hulk_attack() -> None:
     )
     resolved = registry.resolve(attack)
     assert isinstance(resolved, HulkAttackExecutor)
+
+
+def test_registry_resolves_hydra_brute_force_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = HydraBruteForceAttackConfig(
+        name='hydra_http_default_creds',
+        label='Hydra_HTTP_Default_Creds',
+        service='http-get',
+        port=80,
+        username_list=['admin'],
+        password_list=['admin'],
+    )
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, HydraBruteForceExecutor)
 
 
 def test_registry_raises_registry_error_for_unsupported_kind() -> None:

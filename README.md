@@ -164,6 +164,7 @@ Each attack is defined by a `kind` field and mapped to an executor:
 
 * `command` executes external binaries such as `nmap` or `hping3`
 * `hulk` runs an in-process HTTP flood (HULK) against the target device; configurable via `duration_seconds` and `thread_count`
+* `hydra_brute_force` runs real `hydra` against a device using a combo file built (and capped) from `username_list`/`password_list`/`max_attempts`, so the attempt cap is enforced in code rather than trusted to CLI flags
 * `placeholder` is a disabled stub for attacks not yet implemented (cannot be `enabled: true`)
 * additional attack types can be added via the registry
 

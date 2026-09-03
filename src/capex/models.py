@@ -48,7 +48,24 @@ class HulkAttackConfig(BaseModel):
     thread_count: PositiveInt = 100
 
 
-AttackConfig = CommandAttackConfig | PlaceholderAttackConfig | HulkAttackConfig
+class HydraBruteForceAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['hydra_brute_force'] = 'hydra_brute_force'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 3
+    service: str = Field(min_length=1)
+    port: PositiveInt
+    username_list: list[str] = Field(min_length=1)
+    password_list: list[str] = Field(min_length=1)
+    max_attempts: PositiveInt = 10
+    tasks: PositiveInt = 1
+    hydra_binary: str = 'hydra'
+
+
+AttackConfig = CommandAttackConfig | PlaceholderAttackConfig | HulkAttackConfig | HydraBruteForceAttackConfig
 
 
 class AttackFile(BaseModel):
