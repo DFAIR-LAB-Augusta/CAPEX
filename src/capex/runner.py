@@ -6,6 +6,8 @@ import subprocess
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
+from capex.exceptions import CommandExecutionError
+
 if TYPE_CHECKING:
     from collections.abc import Sequence
     from pathlib import Path
@@ -47,7 +49,7 @@ class CommandRunner:
         if check and proc.returncode != 0:
             LOGGER.error('Command failed: %s', args)
             msg = f'Command failed with exit code {proc.returncode}: {args!r}'
-            raise RuntimeError(msg)
+            raise CommandExecutionError(msg)
 
         return result
 

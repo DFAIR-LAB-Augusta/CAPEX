@@ -4,6 +4,8 @@ import time
 
 from typing import TYPE_CHECKING
 
+from capex.exceptions import AttackExecutionError
+
 if TYPE_CHECKING:
     from pathlib import Path
 
@@ -49,4 +51,4 @@ class PlaceholderAttackExecutor:
         device: DeviceConfig,
         log_path: Path,
     ) -> None:
-        raise RuntimeError(f'Attack "{self._attack.name}" is disabled: {self._attack.reason}')
+        raise AttackExecutionError(f'Attack "{self._attack.name}" is disabled: {self._attack.reason}')

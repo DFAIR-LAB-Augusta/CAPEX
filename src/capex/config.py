@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING, Any
 
 import yaml
 
+from capex.exceptions import ConfigError
 from capex.models import AttackFile, DeviceFile
 
 if TYPE_CHECKING:
@@ -16,7 +17,7 @@ def _load_yaml(path: Path) -> dict[str, Any]:
 
     if not isinstance(data, dict):
         msg = f'Expected mapping at top level in {path}'
-        raise ValueError(msg)
+        raise ConfigError(msg)
 
     return data
 

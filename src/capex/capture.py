@@ -27,7 +27,7 @@ class TcpdumpCapture:
 
     def start(self, output_path: Path) -> None:
         if self.process is not None:
-            raise RuntimeError('tcpdump capture already running')
+            raise CaptureError('tcpdump capture already running')
 
         process = self.runner.popen([self.binary, '-w', str(output_path)])
 
