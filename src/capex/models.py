@@ -36,7 +36,19 @@ class PlaceholderAttackConfig(BaseModel):
     reason: str = Field(min_length=1)
 
 
-AttackConfig = CommandAttackConfig | PlaceholderAttackConfig
+class HulkAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['hulk'] = 'hulk'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 3
+    duration_seconds: PositiveInt = 60
+    thread_count: PositiveInt = 100
+
+
+AttackConfig = CommandAttackConfig | PlaceholderAttackConfig | HulkAttackConfig
 
 
 class AttackFile(BaseModel):

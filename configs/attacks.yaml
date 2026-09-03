@@ -52,15 +52,10 @@ attacks:
   # Original FIRCE Concept drift
   - name: hulk_http_flood
     label: HULK_HTTP_Flood
+    kind: hulk
     enabled: true
     repeats: 3
-    command:
-      - uv
-      - run
-      - python3
-      - "./src/capex/attacks/hulk.py"
-      - "60"
-      - "http://{target_ip}"
+    duration_seconds: 60
 
   # - name: http_request
   #   label: HTTP_Request

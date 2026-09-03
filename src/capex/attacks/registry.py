@@ -28,7 +28,6 @@ class AttackRegistry:
                 )
             case 'hulk':
                 return HulkAttackExecutor(
-                    runner=self._runner,
                     attack=attack,
                 )
             case _:

