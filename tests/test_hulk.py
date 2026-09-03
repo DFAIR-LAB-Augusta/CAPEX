@@ -6,7 +6,7 @@ from capex.attacks import hulk
 from capex.models import DeviceConfig, HulkAttackConfig
 
 
-def test_hulk_attack_executor_floods_and_logs_results(tmp_path, monkeypatch) -> None:
+def test_hulk_attack_executor_floods_and_returns_request_count(monkeypatch) -> None:
     call_count = 0
     lock = threading.Lock()
 
@@ -27,17 +27,15 @@ def test_hulk_attack_executor_floods_and_logs_results(tmp_path, monkeypatch) -> 
     )
     executor = hulk.HulkAttackExecutor(attack=attack)
 
-    log_path = tmp_path / 'dev1_CE.txt'
-    executor.execute(device=device, log_path=log_path)
+    detail = executor.execute(device=device)
 
-    content = log_path.read_text(encoding='utf-8')
-    assert 'attack=HULK_HTTP_Flood' in content
-    assert 'device=dev1' in content
-    assert 'requests=' in content
+    assert detail is not None
+    assert detail.startswith('requests=')
     assert call_count > 0
+    assert detail == f'requests={call_count}'
 
 
-def test_hulk_attack_executor_backs_off_on_unreachable_target(tmp_path, monkeypatch) -> None:
+def test_hulk_attack_executor_backs_off_on_unreachable_target(monkeypatch) -> None:
     def failing_urlopen(request, timeout=None):
         raise hulk.urllib.error.URLError('connection refused')
 
@@ -52,8 +50,6 @@ def test_hulk_attack_executor_backs_off_on_unreachable_target(tmp_path, monkeypa
     )
     executor = hulk.HulkAttackExecutor(attack=attack)
 
-    log_path = tmp_path / 'dev1_CE.txt'
-    executor.execute(device=device, log_path=log_path)
+    detail = executor.execute(device=device)
 
-    content = log_path.read_text(encoding='utf-8')
-    assert 'requests=0' in content
+    assert detail == 'requests=0'
