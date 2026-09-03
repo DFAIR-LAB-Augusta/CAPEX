@@ -156,6 +156,8 @@ class ConfigTamperAttackConfig(BaseModel):
     port: PositiveInt = 80
     path: str = Field(min_length=1)
     method: str = 'POST'
+    content_type: str = 'application/x-www-form-urlencoded'
+    soap_action: str | None = None
     body: str = Field(min_length=1)
     timeout_seconds: PositiveInt = 5
 
