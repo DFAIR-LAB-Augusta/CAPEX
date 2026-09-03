@@ -164,6 +164,7 @@ Each attack is defined by a `kind` field and mapped to an executor:
 
 * `command` executes external binaries such as `nmap` or `hping3`
 * `hulk` runs an in-process HTTP flood (HULK) against the target device; configurable via `duration_seconds` and `thread_count`
+* `config_tamper` sends a real config/firmware-tampering-shaped HTTP request (`path`, `method`, `body`) and reports the response status; defaults to `enabled: false` at the model level - each entry needs per-device safety vetting before it's turned on, since a payload that succeeds could brick real hardware
 * `placeholder` is a disabled stub for attacks not yet implemented (cannot be `enabled: true`)
 * additional attack types can be added via the registry
 

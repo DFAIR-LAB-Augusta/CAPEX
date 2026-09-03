@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
 from capex.attacks.hulk import HulkAttackExecutor
+from capex.attacks.impact import ConfigTamperExecutor
 from capex.exceptions import RegistryError
 
 if TYPE_CHECKING:
@@ -29,6 +30,10 @@ class AttackRegistry:
                 )
             case 'hulk':
                 return HulkAttackExecutor(
+                    attack=attack,
+                )
+            case 'config_tamper':
+                return ConfigTamperExecutor(
                     attack=attack,
                 )
             case _:
