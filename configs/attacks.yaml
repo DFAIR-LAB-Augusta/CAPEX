@@ -218,6 +218,30 @@ attacks:
     gateway_ip: 192.168.1.1
     duration_seconds: 30
 
+  # Credential Access #2 (#91) - real entries from Mirai's published
+  # default-credential table (all root:X pairs below are literal entries
+  # from that table, not a synthesized cartesian product).
+  - name: hydra_telnet_mirai_creds
+    label: Hydra_Telnet_Mirai_Creds
+    kind: hydra_brute_force
+    enabled: true
+    repeats: 3
+    service: telnet
+    port: 23
+    username_list:
+      - root
+    password_list:
+      - xc3511
+      - vizxv
+      - admin
+      - "888888"
+      - xmhdipc
+      - default
+      - juantech
+      - "54321"
+    max_attempts: 8
+    tasks: 1
+
   # - name: http_request
   #   label: HTTP_Request
   #   enabled: false
