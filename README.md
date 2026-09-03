@@ -164,6 +164,7 @@ Each attack is defined by a `kind` field and mapped to an executor:
 
 * `command` executes external binaries such as `nmap` or `hping3`
 * `hulk` runs an in-process HTTP flood (HULK) against the target device; configurable via `duration_seconds` and `thread_count`
+* `exfil_sim` sends a bulk outbound POST burst simulating data-staging/exfil traffic; configurable via `payload_size_bytes` and `chunk_size_bytes`
 * `placeholder` is a disabled stub for attacks not yet implemented (cannot be `enabled: true`)
 * additional attack types can be added via the registry
 

@@ -57,6 +57,18 @@ attacks:
     repeats: 3
     duration_seconds: 60
 
+  # Exfiltration (#79)
+  - name: exfil_sim
+    label: Exfil_Sim
+    kind: exfil_sim
+    enabled: true
+    repeats: 3
+    port: 80
+    path: /upload
+    payload_size_bytes: 2000000
+    chunk_size_bytes: 65536
+    timeout_seconds: 10
+
   # - name: http_request
   #   label: HTTP_Request
   #   enabled: false
