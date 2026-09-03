@@ -4,6 +4,7 @@ from ipaddress import IPv4Address
 
 from capex.models import (
     BannerGrabAttackConfig,
+    C2BeaconAttackConfig,
     CommandAttackConfig,
     DeviceConfig,
     HttpFuzzAttackConfig,
@@ -58,3 +59,9 @@ def test_http_fuzz_attack_config_defaults() -> None:
     )
     assert attack.port == 80
     assert attack.timeout_seconds == 5
+
+
+def test_c2_beacon_attack_config_defaults() -> None:
+    attack = C2BeaconAttackConfig(name='c2_beacon', label='C2_Beacon')
+    assert attack.jitter_seconds == 5
+    assert attack.path == '/'

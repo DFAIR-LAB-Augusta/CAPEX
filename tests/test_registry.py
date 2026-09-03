@@ -6,6 +6,7 @@ import pytest
 
 from capex.attacks.application_layer import HttpFuzzExecutor
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
+from capex.attacks.c2 import C2BeaconExecutor
 from capex.attacks.credential_access import HydraBruteForceExecutor
 from capex.attacks.discovery import BannerGrabExecutor, SsdpDiscoveryExecutor
 from capex.attacks.hulk import HulkAttackExecutor
@@ -13,6 +14,7 @@ from capex.attacks.registry import AttackRegistry
 from capex.exceptions import RegistryError
 from capex.models import (
     BannerGrabAttackConfig,
+    C2BeaconAttackConfig,
     CommandAttackConfig,
     HttpFuzzAttackConfig,
     HulkAttackConfig,
@@ -103,6 +105,13 @@ def test_registry_resolves_http_fuzz_attack() -> None:
     )
     resolved = registry.resolve(attack)
     assert isinstance(resolved, HttpFuzzExecutor)
+
+
+def test_registry_resolves_c2_beacon_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = C2BeaconAttackConfig(name='c2_beacon', label='C2_Beacon')
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, C2BeaconExecutor)
 
 
 def test_registry_raises_registry_error_for_unsupported_kind() -> None:
