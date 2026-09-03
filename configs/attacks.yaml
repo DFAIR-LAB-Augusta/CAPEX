@@ -57,6 +57,17 @@ attacks:
     repeats: 3
     duration_seconds: 60
 
+  # Lateral Movement / C2 (#78)
+  - name: c2_beacon
+    label: C2_Beacon
+    kind: c2_beacon
+    enabled: true
+    repeats: 5
+    port: 80
+    path: /check-in
+    jitter_seconds: 5
+    timeout_seconds: 5
+
   # - name: http_request
   #   label: HTTP_Request
   #   enabled: false

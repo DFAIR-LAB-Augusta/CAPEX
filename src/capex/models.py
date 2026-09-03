@@ -3,7 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, IPvAnyAddress, PositiveInt
+from pydantic import BaseModel, ConfigDict, Field, IPvAnyAddress, NonNegativeInt, PositiveInt
 
 
 class DeviceConfig(BaseModel):
@@ -48,7 +48,21 @@ class HulkAttackConfig(BaseModel):
     thread_count: PositiveInt = 100
 
 
-AttackConfig = CommandAttackConfig | PlaceholderAttackConfig | HulkAttackConfig
+class C2BeaconAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['c2_beacon'] = 'c2_beacon'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 3
+    port: PositiveInt = 80
+    path: str = '/'
+    jitter_seconds: NonNegativeInt = 5
+    timeout_seconds: PositiveInt = 5
+
+
+AttackConfig = CommandAttackConfig | PlaceholderAttackConfig | HulkAttackConfig | C2BeaconAttackConfig
 
 
 class AttackFile(BaseModel):
