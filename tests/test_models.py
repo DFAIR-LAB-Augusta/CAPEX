@@ -6,6 +6,7 @@ from capex.models import (
     ArpSpoofAttackConfig,
     BannerGrabAttackConfig,
     C2BeaconAttackConfig,
+    C2DnsBeaconAttackConfig,
     CommandAttackConfig,
     DeviceConfig,
     ExfilSimAttackConfig,
@@ -67,6 +68,12 @@ def test_c2_beacon_attack_config_defaults() -> None:
     attack = C2BeaconAttackConfig(name='c2_beacon', label='C2_Beacon')
     assert attack.jitter_seconds == 5
     assert attack.path == '/'
+
+
+def test_c2_dns_beacon_attack_config_defaults() -> None:
+    attack = C2DnsBeaconAttackConfig(name='c2_dns_beacon', label='C2_DNS_Beacon')
+    assert attack.port == 53
+    assert attack.domain == 'update-check.example'
 
 
 def test_exfil_sim_attack_config_defaults() -> None:

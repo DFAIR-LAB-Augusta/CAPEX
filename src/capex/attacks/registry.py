@@ -6,6 +6,7 @@ from capex.attacks.application_layer import HttpFuzzExecutor
 from capex.attacks.arp import ArpSpoofExecutor
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
 from capex.attacks.c2 import C2BeaconExecutor
+from capex.attacks.c2_dns import DnsC2BeaconExecutor
 from capex.attacks.credential_access import HydraBruteForceExecutor
 from capex.attacks.discovery import BannerGrabExecutor, SsdpDiscoveryExecutor
 from capex.attacks.exfil import ExfilSimExecutor
@@ -57,6 +58,10 @@ class AttackRegistry:
                 )
             case 'c2_beacon':
                 return C2BeaconExecutor(
+                    attack=attack,
+                )
+            case 'c2_dns_beacon':
+                return DnsC2BeaconExecutor(
                     attack=attack,
                 )
             case 'exfil_sim':

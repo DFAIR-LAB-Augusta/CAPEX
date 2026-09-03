@@ -116,6 +116,20 @@ class C2BeaconAttackConfig(BaseModel):
     timeout_seconds: PositiveInt = 5
 
 
+class C2DnsBeaconAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['c2_dns_beacon'] = 'c2_dns_beacon'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 5
+    port: PositiveInt = 53
+    domain: str = 'update-check.example'
+    jitter_seconds: NonNegativeInt = 5
+    timeout_seconds: PositiveInt = 5
+
+
 class ExfilSimAttackConfig(BaseModel):
     model_config = ConfigDict(extra='forbid')
 
@@ -169,6 +183,7 @@ AttackConfig = (
     | HydraBruteForceAttackConfig
     | HttpFuzzAttackConfig
     | C2BeaconAttackConfig
+    | C2DnsBeaconAttackConfig
     | ExfilSimAttackConfig
     | ConfigTamperAttackConfig
     | ArpSpoofAttackConfig
