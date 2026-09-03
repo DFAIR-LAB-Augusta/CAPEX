@@ -7,6 +7,7 @@ from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecu
 from capex.attacks.c2 import C2BeaconExecutor
 from capex.attacks.credential_access import HydraBruteForceExecutor
 from capex.attacks.discovery import BannerGrabExecutor, SsdpDiscoveryExecutor
+from capex.attacks.exfil import ExfilSimExecutor
 from capex.attacks.hulk import HulkAttackExecutor
 from capex.exceptions import RegistryError
 
@@ -54,6 +55,10 @@ class AttackRegistry:
                 )
             case 'c2_beacon':
                 return C2BeaconExecutor(
+                    attack=attack,
+                )
+            case 'exfil_sim':
+                return ExfilSimExecutor(
                     attack=attack,
                 )
             case _:

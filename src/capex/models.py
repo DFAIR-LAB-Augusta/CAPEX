@@ -116,6 +116,21 @@ class C2BeaconAttackConfig(BaseModel):
     timeout_seconds: PositiveInt = 5
 
 
+class ExfilSimAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['exfil_sim'] = 'exfil_sim'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 3
+    port: PositiveInt = 80
+    path: str = '/upload'
+    payload_size_bytes: PositiveInt = 1_000_000
+    chunk_size_bytes: PositiveInt = 65_536
+    timeout_seconds: PositiveInt = 10
+
+
 AttackConfig = (
     CommandAttackConfig
     | PlaceholderAttackConfig
@@ -125,6 +140,7 @@ AttackConfig = (
     | HydraBruteForceAttackConfig
     | HttpFuzzAttackConfig
     | C2BeaconAttackConfig
+    | ExfilSimAttackConfig
 )
 
 

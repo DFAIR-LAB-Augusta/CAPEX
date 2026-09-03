@@ -7,6 +7,7 @@ from capex.models import (
     C2BeaconAttackConfig,
     CommandAttackConfig,
     DeviceConfig,
+    ExfilSimAttackConfig,
     HttpFuzzAttackConfig,
     HydraBruteForceAttackConfig,
     SsdpDiscoveryAttackConfig,
@@ -65,3 +66,9 @@ def test_c2_beacon_attack_config_defaults() -> None:
     attack = C2BeaconAttackConfig(name='c2_beacon', label='C2_Beacon')
     assert attack.jitter_seconds == 5
     assert attack.path == '/'
+
+
+def test_exfil_sim_attack_config_defaults() -> None:
+    attack = ExfilSimAttackConfig(name='exfil_sim', label='Exfil_Sim')
+    assert attack.payload_size_bytes == 1_000_000
+    assert attack.chunk_size_bytes == 65_536

@@ -9,6 +9,7 @@ from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecu
 from capex.attacks.c2 import C2BeaconExecutor
 from capex.attacks.credential_access import HydraBruteForceExecutor
 from capex.attacks.discovery import BannerGrabExecutor, SsdpDiscoveryExecutor
+from capex.attacks.exfil import ExfilSimExecutor
 from capex.attacks.hulk import HulkAttackExecutor
 from capex.attacks.registry import AttackRegistry
 from capex.exceptions import RegistryError
@@ -16,6 +17,7 @@ from capex.models import (
     BannerGrabAttackConfig,
     C2BeaconAttackConfig,
     CommandAttackConfig,
+    ExfilSimAttackConfig,
     HttpFuzzAttackConfig,
     HulkAttackConfig,
     HydraBruteForceAttackConfig,
@@ -112,6 +114,13 @@ def test_registry_resolves_c2_beacon_attack() -> None:
     attack = C2BeaconAttackConfig(name='c2_beacon', label='C2_Beacon')
     resolved = registry.resolve(attack)
     assert isinstance(resolved, C2BeaconExecutor)
+
+
+def test_registry_resolves_exfil_sim_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = ExfilSimAttackConfig(name='exfil_sim', label='Exfil_Sim')
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, ExfilSimExecutor)
 
 
 def test_registry_raises_registry_error_for_unsupported_kind() -> None:

@@ -169,6 +169,7 @@ Each attack is defined by a `kind` field and mapped to an executor:
 * `hydra_brute_force` runs real `hydra` against a device using a combo file built (and capped) from `username_list`/`password_list`/`max_attempts`, so the attempt cap is enforced in code rather than trusted to CLI flags
 * `http_fuzz` sends malformed/fuzzed and traversal HTTP requests (`paths`) to a device's web UI on a configurable `port`
 * `c2_beacon` sends a single jittered check-in request per invocation, mimicking botnet C2 callback traffic; configurable via `port`, `path`, and `jitter_seconds`
+* `exfil_sim` sends a bulk outbound POST burst simulating data-staging/exfil traffic; configurable via `payload_size_bytes` and `chunk_size_bytes`
 * `placeholder` is a disabled stub for attacks not yet implemented (cannot be `enabled: true`)
 * additional attack types can be added via the registry
 
