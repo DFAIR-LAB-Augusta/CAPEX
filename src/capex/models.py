@@ -48,7 +48,20 @@ class HulkAttackConfig(BaseModel):
     thread_count: PositiveInt = 100
 
 
-AttackConfig = CommandAttackConfig | PlaceholderAttackConfig | HulkAttackConfig
+class HttpFuzzAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['http_fuzz'] = 'http_fuzz'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = True
+    repeats: PositiveInt = 3
+    port: PositiveInt = 80
+    paths: list[str] = Field(min_length=1)
+    timeout_seconds: PositiveInt = 5
+
+
+AttackConfig = CommandAttackConfig | PlaceholderAttackConfig | HulkAttackConfig | HttpFuzzAttackConfig
 
 
 class AttackFile(BaseModel):

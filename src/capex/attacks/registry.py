@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from capex.attacks.application_layer import HttpFuzzExecutor
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
 from capex.attacks.hulk import HulkAttackExecutor
 from capex.exceptions import RegistryError
@@ -29,6 +30,10 @@ class AttackRegistry:
                 )
             case 'hulk':
                 return HulkAttackExecutor(
+                    attack=attack,
+                )
+            case 'http_fuzz':
+                return HttpFuzzExecutor(
                     attack=attack,
                 )
             case _:
