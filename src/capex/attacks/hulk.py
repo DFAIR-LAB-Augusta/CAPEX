@@ -9,8 +9,6 @@ import urllib.request
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from pathlib import Path
-
     from capex.models import DeviceConfig, HulkAttackConfig
 
 # HULK - HTTP Unbearable Load King: floods a target with randomized,
@@ -80,12 +78,7 @@ class HulkAttackExecutor:
     def __init__(self, *, attack: HulkAttackConfig) -> None:
         self._attack = attack
 
-    def execute(
-        self,
-        *,
-        device: DeviceConfig,
-        log_path: Path,
-    ) -> None:
+    def execute(self, *, device: DeviceConfig) -> str | None:
         target_url = f'http://{device.ip}'
         host = str(device.ip)
         stop_event = threading.Event()
@@ -104,8 +97,4 @@ class HulkAttackExecutor:
             worker.join(timeout=_WORKER_JOIN_TIMEOUT_SECONDS)
 
         total_requests = sum(worker.request_count for worker in workers)
-
-        with log_path.open('a', encoding='utf-8') as handle:
-            handle.write(
-                f'attack={self._attack.label} device={device.name} requests={total_requests} timestamp={time.time()}\n'
-            )
+        return f'requests={total_requests}'

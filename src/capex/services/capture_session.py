@@ -87,16 +87,16 @@ class CaptureSession:
 
                 executor = self._registry.resolve(attack)
                 now = time.time()
-                executor.execute(
-                    device=device,
-                    log_path=log_path,
-                )
+                detail = executor.execute(device=device)
 
-                handle.write(
+                line = (
                     'Attack: '
                     f'{attack.label}, '
                     f'Attempt: {item.repeat_index + 1}, '
                     f'Unix Time: {now}, '
-                    f'Time Since Start: {now - started_at}\n'
+                    f'Time Since Start: {now - started_at}'
                 )
+                if detail:
+                    line += f', {detail}'
+                handle.write(line + '\n')
                 handle.flush()

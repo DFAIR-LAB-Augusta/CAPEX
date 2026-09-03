@@ -7,10 +7,10 @@ from capex.exceptions import AttackExecutionError
 from capex.models import DeviceConfig, PlaceholderAttackConfig
 
 
-def test_placeholder_executor_raises_attack_execution_error(tmp_path) -> None:
+def test_placeholder_executor_raises_attack_execution_error() -> None:
     attack = PlaceholderAttackConfig(name='legacy', label='legacy', reason='not implemented yet')
     executor = PlaceholderAttackExecutor(attack=attack)
     device = DeviceConfig(name='dev1', ip='192.168.1.1')
 
     with pytest.raises(AttackExecutionError, match='not implemented yet'):
-        executor.execute(device=device, log_path=tmp_path / 'log.txt')
+        executor.execute(device=device)
