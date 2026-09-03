@@ -69,10 +69,8 @@ class CaptureSession:
             LOGGER.warning('No enabled attacks for device %s', device.name)
             return
 
-        repeats = max(attack.repeats for attack in enabled_attacks)
         schedule = build_schedule(
-            attack_count=len(enabled_attacks),
-            repeats_per_attack=repeats,
+            repeats_per_attack=[attack.repeats for attack in enabled_attacks],
             allowed_duration_seconds=allowed,
         )
 
@@ -81,8 +79,6 @@ class CaptureSession:
         with log_path.open('w', encoding='utf-8') as handle:
             for item in schedule:
                 attack = enabled_attacks[item.attack_index]
-                if item.repeat_index >= attack.repeats:
-                    continue
 
                 target_time = started_at + item.offset_seconds
                 sleep_for = target_time - time.time()
