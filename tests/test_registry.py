@@ -11,12 +11,14 @@ from capex.attacks.credential_access import HydraBruteForceExecutor
 from capex.attacks.discovery import BannerGrabExecutor, SsdpDiscoveryExecutor
 from capex.attacks.exfil import ExfilSimExecutor
 from capex.attacks.hulk import HulkAttackExecutor
+from capex.attacks.impact import ConfigTamperExecutor
 from capex.attacks.registry import AttackRegistry
 from capex.exceptions import RegistryError
 from capex.models import (
     BannerGrabAttackConfig,
     C2BeaconAttackConfig,
     CommandAttackConfig,
+    ConfigTamperAttackConfig,
     ExfilSimAttackConfig,
     HttpFuzzAttackConfig,
     HulkAttackConfig,
@@ -121,6 +123,18 @@ def test_registry_resolves_exfil_sim_attack() -> None:
     attack = ExfilSimAttackConfig(name='exfil_sim', label='Exfil_Sim')
     resolved = registry.resolve(attack)
     assert isinstance(resolved, ExfilSimExecutor)
+
+
+def test_registry_resolves_config_tamper_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = ConfigTamperAttackConfig(
+        name='config_tamper',
+        label='Config_Tamper',
+        path='/setup.cgi',
+        body='x=1',
+    )
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, ConfigTamperExecutor)
 
 
 def test_registry_raises_registry_error_for_unsupported_kind() -> None:

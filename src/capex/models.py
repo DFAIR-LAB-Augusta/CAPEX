@@ -131,6 +131,21 @@ class ExfilSimAttackConfig(BaseModel):
     timeout_seconds: PositiveInt = 10
 
 
+class ConfigTamperAttackConfig(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+
+    kind: Literal['config_tamper'] = 'config_tamper'
+    name: str = Field(min_length=1)
+    label: str = Field(min_length=1)
+    enabled: bool = False
+    repeats: PositiveInt = 3
+    port: PositiveInt = 80
+    path: str = Field(min_length=1)
+    method: str = 'POST'
+    body: str = Field(min_length=1)
+    timeout_seconds: PositiveInt = 5
+
+
 AttackConfig = (
     CommandAttackConfig
     | PlaceholderAttackConfig
@@ -141,6 +156,7 @@ AttackConfig = (
     | HttpFuzzAttackConfig
     | C2BeaconAttackConfig
     | ExfilSimAttackConfig
+    | ConfigTamperAttackConfig
 )
 
 

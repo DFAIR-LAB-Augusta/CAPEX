@@ -188,6 +188,24 @@ attacks:
       - configs/payloads/ssdp_msearch.txt
       - "{target_ip}"
 
+  # Impact beyond flooding (#80)
+  # Left disabled by default (and the config_tamper kind itself defaults to
+  # enabled: false at the model level) - the request below is real and
+  # protocol-correct, but whether it actually changes anything depends on
+  # each specific device's firmware. Do not flip enabled: true without
+  # vetting this exact path/body against the specific device it will run
+  # against; a payload that succeeds could brick real lab hardware.
+  - name: config_tamper_setup_cgi
+    label: Config_Tamper_Setup_CGI
+    kind: config_tamper
+    enabled: false
+    repeats: 1
+    port: 80
+    path: /setup.cgi
+    method: POST
+    body: "ssid=capex-test&wpa_psk=capex-test-tamper"
+    timeout_seconds: 5
+
   # - name: http_request
   #   label: HTTP_Request
   #   enabled: false

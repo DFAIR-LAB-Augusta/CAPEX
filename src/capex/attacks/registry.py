@@ -9,6 +9,7 @@ from capex.attacks.credential_access import HydraBruteForceExecutor
 from capex.attacks.discovery import BannerGrabExecutor, SsdpDiscoveryExecutor
 from capex.attacks.exfil import ExfilSimExecutor
 from capex.attacks.hulk import HulkAttackExecutor
+from capex.attacks.impact import ConfigTamperExecutor
 from capex.exceptions import RegistryError
 
 if TYPE_CHECKING:
@@ -59,6 +60,10 @@ class AttackRegistry:
                 )
             case 'exfil_sim':
                 return ExfilSimExecutor(
+                    attack=attack,
+                )
+            case 'config_tamper':
+                return ConfigTamperExecutor(
                     attack=attack,
                 )
             case _:

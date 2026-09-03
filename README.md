@@ -170,6 +170,7 @@ Each attack is defined by a `kind` field and mapped to an executor:
 * `http_fuzz` sends malformed/fuzzed and traversal HTTP requests (`paths`) to a device's web UI on a configurable `port`
 * `c2_beacon` sends a single jittered check-in request per invocation, mimicking botnet C2 callback traffic; configurable via `port`, `path`, and `jitter_seconds`
 * `exfil_sim` sends a bulk outbound POST burst simulating data-staging/exfil traffic; configurable via `payload_size_bytes` and `chunk_size_bytes`
+* `config_tamper` sends a real config/firmware-tampering-shaped HTTP request (`path`, `method`, `body`) and reports the response status; defaults to `enabled: false` at the model level - each entry needs per-device safety vetting before it's turned on, since a payload that succeeds could brick real hardware
 * `placeholder` is a disabled stub for attacks not yet implemented (cannot be `enabled: true`)
 * additional attack types can be added via the registry
 
