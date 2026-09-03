@@ -30,3 +30,13 @@ def test_run_returns_completed_command_on_success() -> None:
 
     assert result.returncode == 0
     assert result.stdout.strip() == 'hi'
+
+
+def test_popen_starts_a_process_and_streams_output() -> None:
+    runner = CommandRunner()
+
+    process = runner.popen([sys.executable, '-c', "print('hi')"])
+    stdout, _stderr = process.communicate(timeout=10)
+
+    assert process.returncode == 0
+    assert stdout.strip() == 'hi'
