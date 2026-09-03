@@ -9,6 +9,7 @@ from capex.models import (
     C2DnsBeaconAttackConfig,
     CommandAttackConfig,
     DeviceConfig,
+    DnsTunnelExfilAttackConfig,
     ExfilSimAttackConfig,
     HttpFuzzAttackConfig,
     HydraBruteForceAttackConfig,
@@ -86,3 +87,9 @@ def test_arp_spoof_attack_config_defaults() -> None:
     attack = ArpSpoofAttackConfig(name='arp_spoof', label='ARP_Spoof', interface='eth0', gateway_ip='192.168.1.1')
     assert attack.duration_seconds == 30
     assert attack.arpspoof_binary == 'arpspoof'
+
+
+def test_dns_tunnel_exfil_attack_config_defaults() -> None:
+    attack = DnsTunnelExfilAttackConfig(name='dns_tunnel_exfil', label='DNS_Tunnel_Exfil')
+    assert attack.payload_size_bytes == 512
+    assert attack.base_domain == 'exfil.example'

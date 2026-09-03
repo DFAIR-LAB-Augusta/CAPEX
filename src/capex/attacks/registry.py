@@ -10,6 +10,7 @@ from capex.attacks.c2_dns import DnsC2BeaconExecutor
 from capex.attacks.credential_access import HydraBruteForceExecutor
 from capex.attacks.discovery import BannerGrabExecutor, SsdpDiscoveryExecutor
 from capex.attacks.exfil import ExfilSimExecutor
+from capex.attacks.exfil_dns import DnsTunnelExfilExecutor
 from capex.attacks.hulk import HulkAttackExecutor
 from capex.attacks.impact import ConfigTamperExecutor
 from capex.exceptions import RegistryError
@@ -75,6 +76,10 @@ class AttackRegistry:
             case 'arp_spoof':
                 return ArpSpoofExecutor(
                     runner=self._runner,
+                    attack=attack,
+                )
+            case 'dns_tunnel_exfil':
+                return DnsTunnelExfilExecutor(
                     attack=attack,
                 )
             case _:
