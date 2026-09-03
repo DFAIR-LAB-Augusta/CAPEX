@@ -60,6 +60,14 @@ def test_start_succeeds_when_process_stays_alive(tmp_path) -> None:
     assert runner.popen_args[0] == 'tcpdump'
 
 
+def test_start_raises_capture_error_when_already_running(tmp_path) -> None:
+    process = _FakeProcess(exited=False)
+    capture = TcpdumpCapture(runner=_FakeRunner(process), process=process)
+
+    with pytest.raises(CaptureError, match='already running'):
+        capture.start(tmp_path / 'out.pcap')
+
+
 def test_start_raises_capture_error_when_process_exits_immediately(tmp_path) -> None:
     process = _FakeProcess(exited=True, returncode=1, stderr='tcpdump: eth9: No such device exists')
     runner = _FakeRunner(process)

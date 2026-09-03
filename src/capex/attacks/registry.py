@@ -4,6 +4,7 @@ from typing import TYPE_CHECKING
 
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
 from capex.attacks.hulk import HulkAttackExecutor
+from capex.exceptions import RegistryError
 
 if TYPE_CHECKING:
     from capex.attacks.base import BoundAttackExecutor
@@ -32,4 +33,4 @@ class AttackRegistry:
                 )
             case _:
                 msg = f'Unsupported attack kind: {attack.kind}'
-                raise ValueError(msg)
+                raise RegistryError(msg)

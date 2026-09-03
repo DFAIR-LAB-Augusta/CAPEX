@@ -1,8 +1,13 @@
 from __future__ import annotations
 
+import types
+
+import pytest
+
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
 from capex.attacks.hulk import HulkAttackExecutor
 from capex.attacks.registry import AttackRegistry
+from capex.exceptions import RegistryError
 from capex.models import CommandAttackConfig, HulkAttackConfig, PlaceholderAttackConfig
 from capex.runner import CommandRunner
 
@@ -40,3 +45,11 @@ def test_registry_resolves_hulk_attack() -> None:
     )
     resolved = registry.resolve(attack)
     assert isinstance(resolved, HulkAttackExecutor)
+
+
+def test_registry_raises_registry_error_for_unsupported_kind() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = types.SimpleNamespace(kind='unsupported')
+
+    with pytest.raises(RegistryError, match='Unsupported attack kind'):
+        registry.resolve(attack)
