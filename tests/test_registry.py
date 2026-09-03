@@ -1,8 +1,37 @@
 from __future__ import annotations
 
+import types
+
+import pytest
+
+from capex.attacks.application_layer import HttpFuzzExecutor
+from capex.attacks.arp import ArpSpoofExecutor
 from capex.attacks.builtins import CommandAttackExecutor, PlaceholderAttackExecutor
+from capex.attacks.c2 import C2BeaconExecutor
+from capex.attacks.c2_dns import DnsC2BeaconExecutor
+from capex.attacks.credential_access import HydraBruteForceExecutor
+from capex.attacks.discovery import BannerGrabExecutor, SsdpDiscoveryExecutor
+from capex.attacks.exfil import ExfilSimExecutor
+from capex.attacks.exfil_dns import DnsTunnelExfilExecutor
+from capex.attacks.hulk import HulkAttackExecutor
+from capex.attacks.impact import ConfigTamperExecutor
 from capex.attacks.registry import AttackRegistry
-from capex.models import CommandAttackConfig, PlaceholderAttackConfig
+from capex.exceptions import RegistryError
+from capex.models import (
+    ArpSpoofAttackConfig,
+    BannerGrabAttackConfig,
+    C2BeaconAttackConfig,
+    C2DnsBeaconAttackConfig,
+    CommandAttackConfig,
+    ConfigTamperAttackConfig,
+    DnsTunnelExfilAttackConfig,
+    ExfilSimAttackConfig,
+    HttpFuzzAttackConfig,
+    HulkAttackConfig,
+    HydraBruteForceAttackConfig,
+    PlaceholderAttackConfig,
+    SsdpDiscoveryAttackConfig,
+)
 from capex.runner import CommandRunner
 
 
@@ -21,10 +50,128 @@ def test_registry_resolves_command_attack() -> None:
 def test_registry_resolves_placeholder_attack() -> None:
     registry = AttackRegistry(CommandRunner())
     attack = PlaceholderAttackConfig(
-        name='legacy_hulk',
-        label='HULK_HTTP_Flood',
+        name='legacy_placeholder',
+        label='Legacy_Placeholder',
         kind='placeholder',
         reason='disabled',
     )
     resolved = registry.resolve(attack)
     assert isinstance(resolved, PlaceholderAttackExecutor)
+
+
+def test_registry_resolves_hulk_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = HulkAttackConfig(
+        name='hulk_http_flood',
+        label='HULK_HTTP_Flood',
+        kind='hulk',
+    )
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, HulkAttackExecutor)
+
+
+def test_registry_resolves_ssdp_discovery_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = SsdpDiscoveryAttackConfig(
+        name='ssdp_discovery',
+        label='SSDP_Discovery',
+        kind='ssdp_discovery',
+    )
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, SsdpDiscoveryExecutor)
+
+
+def test_registry_resolves_banner_grab_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = BannerGrabAttackConfig(
+        name='banner_grab',
+        label='Banner_Grab',
+        kind='banner_grab',
+    )
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, BannerGrabExecutor)
+
+
+def test_registry_resolves_hydra_brute_force_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = HydraBruteForceAttackConfig(
+        name='hydra_http_default_creds',
+        label='Hydra_HTTP_Default_Creds',
+        service='http-get',
+        port=80,
+        username_list=['admin'],
+        password_list=['admin'],
+    )
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, HydraBruteForceExecutor)
+
+
+def test_registry_resolves_http_fuzz_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = HttpFuzzAttackConfig(
+        name='http_fuzz',
+        label='HTTP_Fuzz',
+        paths=['/../../../../etc/passwd'],
+    )
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, HttpFuzzExecutor)
+
+
+def test_registry_resolves_c2_beacon_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = C2BeaconAttackConfig(name='c2_beacon', label='C2_Beacon')
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, C2BeaconExecutor)
+
+
+def test_registry_resolves_c2_dns_beacon_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = C2DnsBeaconAttackConfig(name='c2_dns_beacon', label='C2_DNS_Beacon')
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, DnsC2BeaconExecutor)
+
+
+def test_registry_resolves_exfil_sim_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = ExfilSimAttackConfig(name='exfil_sim', label='Exfil_Sim')
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, ExfilSimExecutor)
+
+
+def test_registry_resolves_config_tamper_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = ConfigTamperAttackConfig(
+        name='config_tamper',
+        label='Config_Tamper',
+        path='/setup.cgi',
+        body='x=1',
+    )
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, ConfigTamperExecutor)
+
+
+def test_registry_resolves_arp_spoof_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = ArpSpoofAttackConfig(
+        name='arp_spoof',
+        label='ARP_Spoof',
+        interface='eth0',
+        gateway_ip='192.168.1.1',
+    )
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, ArpSpoofExecutor)
+
+
+def test_registry_resolves_dns_tunnel_exfil_attack() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = DnsTunnelExfilAttackConfig(name='dns_tunnel_exfil', label='DNS_Tunnel_Exfil')
+    resolved = registry.resolve(attack)
+    assert isinstance(resolved, DnsTunnelExfilExecutor)
+
+
+def test_registry_raises_registry_error_for_unsupported_kind() -> None:
+    registry = AttackRegistry(CommandRunner())
+    attack = types.SimpleNamespace(kind='unsupported')
+
+    with pytest.raises(RegistryError, match='Unsupported attack kind'):
+        registry.resolve(attack)

@@ -50,6 +50,11 @@ def validate_attacks(attacks: list[AttackConfig]) -> None:
         msg = f'Duplicate attack names found: {", ".join(sorted(duplicate_names))}'
         raise ConfigError(msg)
 
+    for attack in attacks:
+        if attack.kind == 'placeholder' and attack.enabled:
+            msg = f'Placeholder attack "{attack.name}" cannot be enabled: {attack.reason}'
+            raise ConfigError(msg)
+
     enabled_attacks = [attack for attack in attacks if attack.enabled]
     if not enabled_attacks:
         raise ConfigError('No attacks are enabled.')

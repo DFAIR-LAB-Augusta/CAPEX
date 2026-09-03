@@ -3,7 +3,7 @@
 # Core settings (top‐level)
 line-length    = 120
 cache-dir      = ".ruff_cache"
-target-version = "py310"
+target-version = "py314"
 unsafe-fixes   = true
 show-fixes     = true
 
