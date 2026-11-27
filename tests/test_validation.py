@@ -15,7 +15,7 @@ from capex.validation import (
 def test_validate_capture_config_rejects_large_safe_period() -> None:
     config = CaptureConfig(
         duration_seconds=100,
-        safe_period_seconds=100,
+        safe_period_seconds=50,
     )
 
     with pytest.raises(ValidationError):

@@ -77,7 +77,8 @@ class CaptureSession:
         ground_truth_path: Path,
         session_id: str,
     ) -> None:
-        allowed = self._config.duration_seconds - self._config.safe_period_seconds
+        safe_period = self._config.safe_period_seconds
+        allowed = self._config.duration_seconds - 2 * safe_period
 
         enabled_attacks = [attack for attack in attacks if attack.enabled]
         if not enabled_attacks:
@@ -87,6 +88,7 @@ class CaptureSession:
         schedule = build_schedule(
             repeats_per_attack=[attack.repeats for attack in enabled_attacks],
             allowed_duration_seconds=allowed,
+            start_offset_seconds=safe_period,
         )
 
         started_at = time.time()

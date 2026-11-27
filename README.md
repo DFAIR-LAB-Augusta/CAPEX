@@ -156,11 +156,17 @@ make test
 Each device produces:
 
 ```
-data/raw/<device>_flow.pcap
-data/logs/<device>_CE.txt
+data/raw/<device>_<session>_flow.pcap
+data/logs/<device>_<session>_CE.txt
+data/logs/<device>_<session>_GT.csv
 ```
 
-Logs include timestamped records of each attack execution.
+`<session>` is a UTC session ID (`YYYYmmddTHHMMSSZ-xxxxxx`) that keeps runs
+from overwriting each other.
+
+The `_CE.txt` log has one line per attack execution, including `Unix Time`,
+`End Unix Time`, `Target IP` and `Session`. The `_GT.csv` ground-truth file has
+the columns `session_id,device,target_ip,label,attempt,start_unix,end_unix`.
 
 ---
 

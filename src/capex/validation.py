@@ -12,9 +12,9 @@ if TYPE_CHECKING:
 
 def validate_capture_config(config: CaptureConfig) -> None:
     """Validate cross-field capture configuration constraints."""
-    if config.safe_period_seconds >= config.duration_seconds:
+    if 2 * config.safe_period_seconds >= config.duration_seconds:
         msg = (
-            'safe_period_seconds must be less than duration_seconds. '
+            'twice safe_period_seconds must be less than duration_seconds. '
             f'Got safe_period_seconds={config.safe_period_seconds} and '
             f'duration_seconds={config.duration_seconds}.'
         )

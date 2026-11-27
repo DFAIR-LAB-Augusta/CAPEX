@@ -139,11 +139,19 @@ config change without waiting on a full multi-device run.
 
 ### What to expect
 
-* `data/raw/<device>_flow.pcap` — the packet capture for that device
-* `data/logs/<device>_CE.txt` — a text log with one line per attack
-  invocation: label, attempt number, timestamp, and any detail the
-  executor reported (e.g. `requests=142` for a flood, `responses=2` for
-  an SSDP probe)
+* `data/raw/<device>_<session>_flow.pcap` — the packet capture for that device
+* `data/logs/<device>_<session>_CE.txt` — a text log with one line per attack
+  invocation: label, attempt number, start (`Unix Time`), `End Unix Time`,
+  `Target IP`, `Session`, and any detail the executor reported (e.g.
+  `requests=142` for a flood, `responses=2` for an SSDP probe)
+* `data/logs/<device>_<session>_GT.csv` — the ground-truth CSV with columns
+  `session_id,device,target_ip,label,attempt,start_unix,end_unix`, one row per
+  attack invocation
+
+`<session>` is a UTC session ID of the form `YYYYmmddTHHMMSSZ-xxxxxx`. It keeps
+runs from overwriting each other's files. The safe period is honored at both
+the start and the end of the capture window, so `2 * safe_period` must be less
+than the capture duration.
 
 A successful run produces a non-empty `.pcap` for every enabled device
 and a `.txt` log with one line per scheduled attack repeat. If a log is

@@ -112,7 +112,7 @@ def test_run_starts_and_stops_tcpdump_capture(tmp_path, monkeypatch) -> None:
 
     device = DeviceConfig(name='dev1', ip='192.168.1.1')
     config = CaptureConfig(
-        duration_seconds=2,
+        duration_seconds=4,
         safe_period_seconds=1,
         output_dir=tmp_path,
         log_dir=tmp_path,
