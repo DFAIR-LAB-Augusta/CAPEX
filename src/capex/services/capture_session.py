@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from capex.attacks.registry import AttackRegistry
 from capex.capture import TcpdumpCapture
-from capex.paths import build_log_path, build_pcap_path
+from capex.paths import build_log_path, build_pcap_path, new_session_id
 from capex.scheduler import build_schedule
 
 if TYPE_CHECKING:
@@ -36,8 +36,10 @@ class CaptureSession:
         device: DeviceConfig,
         attacks: list[AttackConfig],
     ) -> None:
-        pcap_path = build_pcap_path(config=self._config, device=device)
-        log_path = build_log_path(config=self._config, device=device)
+        session_id = new_session_id()
+        LOGGER.info('Starting capture session %s for device %s', session_id, device.name)
+        pcap_path = build_pcap_path(config=self._config, device=device, session_id=session_id)
+        log_path = build_log_path(config=self._config, device=device, session_id=session_id)
 
         capture = TcpdumpCapture(
             runner=self._runner,
@@ -48,7 +50,7 @@ class CaptureSession:
         started_at = time.time()
 
         try:
-            self._run_attacks(device=device, attacks=attacks, log_path=log_path)
+            self._run_attacks(device=device, attacks=attacks, log_path=log_path, session_id=session_id)
             remaining = (started_at + self._config.duration_seconds) - time.time()
             if remaining > 0:
                 time.sleep(remaining)
@@ -61,6 +63,7 @@ class CaptureSession:
         device: DeviceConfig,
         attacks: list[AttackConfig],
         log_path: Path,
+        session_id: str,
     ) -> None:
         allowed = self._config.duration_seconds - self._config.safe_period_seconds
 
