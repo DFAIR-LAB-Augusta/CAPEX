@@ -71,6 +71,7 @@ def test_run_attacks_invokes_each_attack_exactly_its_configured_repeats(tmp_path
         device=device,
         attacks=[few_repeats, many_repeats],
         log_path=log_path,
+        ground_truth_path=tmp_path / 'gt.csv',
         session_id='S1',
     )
 
@@ -97,7 +98,9 @@ def test_run_attacks_warns_and_returns_early_when_no_attacks_enabled(tmp_path, c
 
     log_path = tmp_path / 'dev1_CE.txt'
     with caplog.at_level('WARNING'):
-        session._run_attacks(device=device, attacks=[disabled], log_path=log_path, session_id='S1')
+        session._run_attacks(
+            device=device, attacks=[disabled], log_path=log_path, ground_truth_path=tmp_path / 'gt.csv', session_id='S1'
+        )
 
     assert 'No enabled attacks for device dev1' in caplog.text
     assert not log_path.exists()
@@ -149,7 +152,9 @@ def test_run_attacks_appends_executor_detail_to_session_log_line(tmp_path, monke
     attack = HulkAttackConfig(name='hulk', label='HULK', repeats=1, thread_count=1, duration_seconds=1)
 
     log_path = tmp_path / 'dev1_CE.txt'
-    session._run_attacks(device=device, attacks=[attack], log_path=log_path, session_id='S1')
+    session._run_attacks(
+        device=device, attacks=[attack], log_path=log_path, ground_truth_path=tmp_path / 'gt.csv', session_id='S1'
+    )
 
     (line,) = log_path.read_text(encoding='utf-8').splitlines()
     assert line.startswith('Attack: HULK, ')
