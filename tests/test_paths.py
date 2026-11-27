@@ -36,11 +36,11 @@ def test_build_pcap_path() -> None:
     config = CaptureConfig(output_dir=Path('data/raw'), log_dir=Path('data/logs'))
     device = DeviceConfig(name='dev1', ip='192.168.1.1')
 
-    assert build_pcap_path(config=config, device=device) == Path('data/raw/dev1_flow.pcap')
+    assert build_pcap_path(config=config, device=device, session_id='S1') == Path('data/raw/dev1_S1_flow.pcap')
 
 
 def test_build_log_path() -> None:
     config = CaptureConfig(output_dir=Path('data/raw'), log_dir=Path('data/logs'))
     device = DeviceConfig(name='dev1', ip='192.168.1.1')
 
-    assert build_log_path(config=config, device=device) == Path('data/logs/dev1_CE.txt')
+    assert build_log_path(config=config, device=device, session_id='S1') == Path('data/logs/dev1_S1_CE.txt')

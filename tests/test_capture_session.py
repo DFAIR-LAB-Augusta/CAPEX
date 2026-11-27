@@ -71,6 +71,8 @@ def test_run_attacks_invokes_each_attack_exactly_its_configured_repeats(tmp_path
         device=device,
         attacks=[few_repeats, many_repeats],
         log_path=log_path,
+        ground_truth_path=tmp_path / 'gt.csv',
+        session_id='S1',
     )
 
     few_calls = [call for call in runner.calls if call[1] == 'few']
@@ -96,7 +98,9 @@ def test_run_attacks_warns_and_returns_early_when_no_attacks_enabled(tmp_path, c
 
     log_path = tmp_path / 'dev1_CE.txt'
     with caplog.at_level('WARNING'):
-        session._run_attacks(device=device, attacks=[disabled], log_path=log_path)
+        session._run_attacks(
+            device=device, attacks=[disabled], log_path=log_path, ground_truth_path=tmp_path / 'gt.csv', session_id='S1'
+        )
 
     assert 'No enabled attacks for device dev1' in caplog.text
     assert not log_path.exists()
@@ -108,7 +112,7 @@ def test_run_starts_and_stops_tcpdump_capture(tmp_path, monkeypatch) -> None:
 
     device = DeviceConfig(name='dev1', ip='192.168.1.1')
     config = CaptureConfig(
-        duration_seconds=2,
+        duration_seconds=4,
         safe_period_seconds=1,
         output_dir=tmp_path,
         log_dir=tmp_path,
@@ -122,12 +126,13 @@ def test_run_starts_and_stops_tcpdump_capture(tmp_path, monkeypatch) -> None:
 
     assert len(runner.popen_calls) == 1
     assert runner.popen_calls[0][0] == 'tcpdump'
-    assert str(tmp_path / 'dev1_flow.pcap') in runner.popen_calls[0]
+    (pcap_arg,) = [arg for arg in runner.popen_calls[0] if arg.endswith('_flow.pcap')]
+    assert pcap_arg.startswith(str(tmp_path / 'dev1_'))
 
     process = runner.processes[0]
     assert process.terminated is True
 
-    assert (tmp_path / 'dev1_CE.txt').exists()
+    assert len(list(tmp_path.glob('dev1_*_CE.txt'))) == 1
 
 
 def test_run_attacks_appends_executor_detail_to_session_log_line(tmp_path, monkeypatch) -> None:
@@ -147,7 +152,9 @@ def test_run_attacks_appends_executor_detail_to_session_log_line(tmp_path, monke
     attack = HulkAttackConfig(name='hulk', label='HULK', repeats=1, thread_count=1, duration_seconds=1)
 
     log_path = tmp_path / 'dev1_CE.txt'
-    session._run_attacks(device=device, attacks=[attack], log_path=log_path)
+    session._run_attacks(
+        device=device, attacks=[attack], log_path=log_path, ground_truth_path=tmp_path / 'gt.csv', session_id='S1'
+    )
 
     (line,) = log_path.read_text(encoding='utf-8').splitlines()
     assert line.startswith('Attack: HULK, ')
