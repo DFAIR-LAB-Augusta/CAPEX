@@ -18,12 +18,14 @@ def build_schedule(
     *,
     repeats_per_attack: Sequence[int],
     allowed_duration_seconds: int,
+    start_offset_seconds: float = 0.0,
 ) -> list[ScheduledAttack]:
     """Build a schedule spreading each attack's repeats evenly across the full duration.
 
     Each attack's repeats are spaced independently over the whole
     ``allowed_duration_seconds`` window, so attacks with fewer repeats than
-    others are not clustered into the earliest part of the run.
+    others are not clustered into the earliest part of the run. Every offset is
+    shifted by ``start_offset_seconds`` so a leading safe period can be honored.
     """
     schedule: list[ScheduledAttack] = []
 
@@ -35,7 +37,7 @@ def build_schedule(
         for repeat_index in range(repeats):
             schedule.append(
                 ScheduledAttack(
-                    offset_seconds=repeat_index * interval,
+                    offset_seconds=start_offset_seconds + repeat_index * interval,
                     attack_index=attack_index,
                     repeat_index=repeat_index,
                 )
